@@ -2,417 +2,1063 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111936">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#101B3D">
+  <meta name="description" content="المستقبلي - منصة تعليمية تجمع الطلاب والمدرسين وأولياء الأمور في تجربة تعليمية متطورة.">
+  <meta name="application-name" content="المستقبلي">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <title>المستقبلي | MOSTAQBALI</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      font-family: Arial, Tahoma, sans-serif;
-    }
-
-    body {
-      background: #111936;
-      color: white;
-    }
-
-    .screen {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      isolation: isolate;
-      background:
-        radial-gradient(ellipse at 15% 20%, #4269d9 0%, transparent 42%),
-        radial-gradient(ellipse at 85% 75%, #6946c7 0%, transparent 45%),
-        linear-gradient(135deg, #101a3a, #202d61 55%, #111936);
-      transition: opacity .25s ease;
-    }
-
-    .screen::before,
-    .screen::after {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      width: 65vw;
-      height: 65vw;
-      max-width: 500px;
-      max-height: 500px;
-      border-radius: 50%;
-      filter: blur(75px);
-      opacity: .35;
-      background: #547cff;
-      animation: float 7s ease-in-out infinite alternate;
-    }
-
-    .screen::before {
-      top: -20%;
-      left: -20%;
-    }
-
-    .screen::after {
-      bottom: -25%;
-      right: -15%;
-      background: #a16bff;
-      animation-delay: -3s;
-    }
-
-    .content {
-      width: min(90%, 420px);
-      text-align: center;
-      animation: appear .45s ease-out;
-    }
-
-    .brand-icon {
-      width: 78px;
-      height: 78px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 23px;
-      border-radius: 25px;
-      border: 1px solid #ffffff45;
-      background: linear-gradient(145deg, #ffffff2c, #ffffff08);
-      box-shadow: 0 12px 50px #00000025;
-      backdrop-filter: blur(15px);
-    }
-
-    .brand-icon svg {
-      width: 49px;
-      height: 49px;
-    }
-
-    h1 {
-      font-size: clamp(30px, 7vw, 42px);
-      font-weight: 800;
-      letter-spacing: -.7px;
-    }
-
-    .english {
-      margin-top: 8px;
-      font-size: 12px;
-      letter-spacing: 5px;
-      color: #d0d9ff;
-      direction: ltr;
-    }
-
-    .tagline {
-      margin-top: 23px;
-      font-size: 16px;
-      color: #e0e6ff;
-    }
-
-    .progress {
-      width: 180px;
-      height: 4px;
-      margin: 30px auto 0;
-      overflow: hidden;
-      border-radius: 10px;
-      background: #ffffff30;
-    }
-
-    .progress span {
-      display: block;
-      width: 0;
-      height: 100%;
-      border-radius: inherit;
-      background: #a8c0ff;
-      animation: load .85s linear forwards;
-    }
-
-    .loading {
-      margin-top: 15px;
-      font-size: 12px;
-      color: #c3ccef;
-    }
-
-    .home {
-      display: none;
-      min-height: 100vh;
-      padding: 24px;
-      background:
-        radial-gradient(ellipse at 90% 0%, #d9d4ff 0%, transparent 36%),
-        radial-gradient(ellipse at 0% 80%, #d5e7ff 0%, transparent 40%),
-        #f5f7ff;
-      color: #172044;
-    }
-
-    .nav {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0 25px;
-    }
-
-    .nav-brand {
-      font-weight: 800;
-      font-size: 23px;
-    }
-
-    .nav-brand small {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #6d75a0;
-      direction: ltr;
-    }
-
-    .login {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 18px;
-      background: #315ce9;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .hero {
-      max-width: 1100px;
-      min-height: 65vh;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 9px 14px;
-      border-radius: 30px;
-      background: #e6eaff;
-      color: #315ce9;
-      font-size: 13px;
-      font-weight: bold;
-      margin-bottom: 24px;
-    }
-
-    .hero h2 {
-      max-width: 750px;
-      font-size: clamp(36px, 7vw, 66px);
-      line-height: 1.35;
-    }
-
-    .hero h2 span {
-      color: #315ce9;
-    }
-
-    .hero p {
-      max-width: 590px;
-      margin-top: 20px;
-      line-height: 2;
-      color: #646d8e;
-      font-size: 16px;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .primary, .secondary {
-      padding: 15px 22px;
-      border-radius: 13px;
-      border: 0;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .primary {
-      color: white;
-      background: linear-gradient(135deg, #315ce9, #7656e9);
-      box-shadow: 0 9px 25px #315ce930;
-    }
-
-    .secondary {
-      background: white;
-      color: #27345e;
-      border: 1px solid #e0e5f5;
-    }
-
-    .features {
-      max-width: 1100px;
-      margin: 15px auto 35px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .feature {
-      padding: 22px;
-      border-radius: 18px;
-      border: 1px solid #e5e9f7;
-      background: #ffffffd9;
-      box-shadow: 0 10px 35px #24376b09;
-    }
-
-    .feature h3 {
-      margin-bottom: 9px;
-      font-size: 17px;
-    }
-
-    .feature p {
-      color: #737b98;
-      font-size: 13px;
-      line-height: 1.9;
-    }
-
-    footer {
-      max-width: 1100px;
-      margin: 30px auto 0;
-      text-align: center;
-      color: #7e86a2;
-      font-size: 12px;
-    }
-
-    @keyframes load {
-      to { width: 100%; }
-    }
-
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes float {
-      from { transform: translate(0, 0) scale(1); }
-      to { transform: translate(35px, -25px) scale(1.15); }
-    }
-
-    @media (max-width: 600px) {
-      .features { grid-template-columns: 1fr; }
-      .home { padding: 18px; }
-      .hero { min-height: 60vh; }
-      .brand-icon { width: 68px; height: 68px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-      }
-    }
-  </style>
+  <script src="config.js" defer></script>
+  <script src="components.js" defer></script>
+  <script src="home.js" defer></script>
+  <script src="teachers.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
 
 <body>
+  <a class="skip-link" href="#main-content">انتقل إلى المحتوى الرئيسي</a>
 
-  <section class="screen" id="splash" aria-label="شاشة البداية">
-    <div class="content">
-      <div class="brand-icon">
-        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-          <path d="M12 48V17L32 39L52 17V48"
-                stroke="white" stroke-width="6"
-                stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M23 49H41"
-                stroke="#AFC4FF" stroke-width="5"
-                stroke-linecap="round"/>
-        </svg>
+  <!-- شاشة البداية -->
+  <section id="splash-screen" class="splash-screen" aria-label="المستقبلي">
+    <div class="splash-glow splash-glow-one"></div>
+    <div class="splash-glow splash-glow-two"></div>
+
+    <div class="splash-content">
+      <img
+        class="splash-logo"
+        src="logo.svg"
+        alt="شعار المستقبلي"
+        width="104"
+        height="104"
+      >
+
+      <div class="splash-brand">
+        <h1>المستقبلي</h1>
+        <span>MOSTAQBALI</span>
       </div>
 
-      <h1>المستقبلي</h1>
-      <div class="english">MOSTAQBALI</div>
-      <p class="tagline">مستقبلك يبدأ من هنا.</p>
+      <p class="splash-description">
+        مستقبلك يبدأ بخطوة علم
+      </p>
 
-      <div class="progress"><span></span></div>
-      <div class="loading">أهلاً بك في عالم المستقبلي</div>
+      <div class="splash-loader" role="status" aria-label="جارٍ تجهيز المنصة">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <p class="splash-caption">نجهّز لك تجربة تعليمية مختلفة</p>
+    </div>
+
+    <div class="splash-footer">
+      <span>تعلّم اليوم، اصنع مستقبلك غدًا</span>
     </div>
   </section>
 
-  <main class="home" id="home">
-    <header class="nav">
-      <div class="nav-brand">
-        المستقبلي
-        <small>MOSTAQBALI</small>
+  <!-- التطبيق الرئيسي -->
+  <div id="app" class="app-shell" hidden>
+
+    <!-- شريط التنقل العلوي -->
+    <header class="topbar" id="topbar">
+      <div class="topbar-inner">
+
+        <a href="#home" class="brand" data-route="home" aria-label="المستقبلي - الرئيسية">
+          <img src="logo.svg" alt="" class="brand-logo" width="46" height="46">
+          <span class="brand-copy">
+            <strong>المستقبلي</strong>
+            <small>MOSTAQBALI</small>
+          </span>
+        </a>
+
+        <button
+          type="button"
+          class="mobile-menu-toggle"
+          id="mobile-menu-toggle"
+          aria-label="فتح القائمة"
+          aria-expanded="false"
+          aria-controls="main-navigation"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="main-navigation" id="main-navigation" aria-label="القائمة الرئيسية">
+          <a href="#home" class="nav-link active" data-route="home">الرئيسية</a>
+          <a href="#teachers" class="nav-link" data-route="teachers">المدرسون</a>
+          <a href="#subjects" class="nav-link" data-route="subjects">المواد الدراسية</a>
+          <a href="#how-it-works" class="nav-link" data-route="how-it-works">كيف تعمل المنصة؟</a>
+        </nav>
+
+        <div class="topbar-actions">
+          <button type="button" class="btn btn-ghost" data-action="open-login">
+            تسجيل الدخول
+          </button>
+
+          <button type="button" class="btn btn-primary" data-action="open-register">
+            إنشاء حساب
+          </button>
+        </div>
       </div>
-      <button class="login" id="loginBtn">تسجيل الدخول</button>
     </header>
 
-    <section class="hero">
-      <span class="badge">✨ رحلتك التعليمية تبدأ الآن</span>
-      <h2>اتعلم النهارده،<br><span>وابنِ مستقبلك بكرة.</span></h2>
-      <p>
-        اكتشف عالمًا من الدروس والكورسات والامتحانات،
-        وتابع تقدمك التعليمي في مكان واحد.
-        مستقبلك يستحق أفضل بداية.
-      </p>
+    <!-- المحتوى الرئيسي -->
+    <main id="main-content">
 
-      <div class="actions">
-        <button class="primary" id="startBtn">ابدأ رحلتك التعليمية ←</button>
-        <button class="secondary" id="exploreBtn">اكتشف المنصة</button>
+      <!-- الصفحة الرئيسية -->
+      <section id="home-page" class="page-section home-page" data-page="home">
+
+        <div class="hero-section">
+          <div class="hero-background-shape hero-shape-one"></div>
+          <div class="hero-background-shape hero-shape-two"></div>
+
+          <div class="container hero-grid">
+
+            <div class="hero-content">
+              <div class="hero-eyebrow">
+                <span class="status-dot"></span>
+                <span>رحلتك التعليمية تبدأ من هنا</span>
+              </div>
+
+              <h1 class="hero-title">
+                مستقبلك يستحق
+                <span class="gradient-text">تعليمًا أفضل</span>
+              </h1>
+
+              <p class="hero-description">
+                اكتشف المدرسين المناسبين لك، وتعلّم بالطريقة التي تناسبك،
+                وتابع تقدمك الدراسي من خلال منصة تعليمية تجمع كل ما تحتاجه
+                في مكان واحد.
+              </p>
+
+              <div class="hero-actions">
+                <button type="button" class="btn btn-primary btn-large" data-action="open-register">
+                  ابدأ رحلتك التعليمية
+                  <span aria-hidden="true">←</span>
+                </button>
+
+                <button type="button" class="btn btn-outline btn-large" data-action="browse-teachers">
+                  اكتشف المدرسين
+                </button>
+              </div>
+
+              <div class="hero-benefits">
+                <div class="benefit-item">
+                  <span class="benefit-icon" aria-hidden="true">✓</span>
+                  <span>حساب الطالب مجاني</span>
+                </div>
+
+                <div class="benefit-item">
+                  <span class="benefit-icon" aria-hidden="true">✓</span>
+                  <span>متابعة التقدم الدراسي</span>
+                </div>
+
+                <div class="benefit-item">
+                  <span class="benefit-icon" aria-hidden="true">✓</span>
+                  <span>تجربة عربية متكاملة</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-visual" aria-label="رحلتك نحو مستقبل أفضل">
+              <div class="hero-visual-glow"></div>
+
+              <div class="hero-orbit orbit-one"></div>
+              <div class="hero-orbit orbit-two"></div>
+
+              <div class="hero-main-card">
+                <div class="hero-card-top">
+                  <div>
+                    <span class="card-overline">رحلتك نحو النجاح</span>
+                    <h2>خطوة اليوم تصنع الغد</h2>
+                  </div>
+
+                  <div class="hero-card-icon" aria-hidden="true">M</div>
+                </div>
+
+                <div class="hero-illustration">
+                  <div class="illustration-window">
+                    <div class="illustration-window-header">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+
+                    <div class="illustration-content">
+                      <div class="illustration-sidebar">
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                      </div>
+
+                      <div class="illustration-board">
+                        <div class="board-title"></div>
+                        <div class="board-line board-line-long"></div>
+                        <div class="board-line board-line-medium"></div>
+
+                        <div class="board-cards">
+                          <div class="board-card board-card-blue"></div>
+                          <div class="board-card board-card-purple"></div>
+                          <div class="board-card board-card-light"></div>
+                        </div>
+
+                        <div class="board-progress">
+                          <span></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hero-card-bottom">
+                  <div class="hero-card-mark">
+                    <span class="mark-dot"></span>
+                    <span>تعلّم • تطوّر • تقدّم</span>
+                  </div>
+
+                  <span class="hero-card-arrow" aria-hidden="true">↗</span>
+                </div>
+              </div>
+
+              <div class="floating-card floating-card-top">
+                <div class="floating-card-icon floating-icon-purple">✦</div>
+                <div>
+                  <strong>تعلّم بذكاء</strong>
+                  <span>خطّط لنجاحك</span>
+                </div>
+              </div>
+
+              <div class="floating-card floating-card-bottom">
+                <div class="floating-card-icon floating-icon-blue">✓</div>
+                <div>
+                  <strong>تابع تقدّمك</strong>
+                  <span>خطوة بعد خطوة</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- المزايا -->
+        <section class="features-section section-padding">
+          <div class="container">
+            <div class="section-heading">
+              <span class="section-kicker">لماذا المستقبلي؟</span>
+              <h2>كل ما تحتاجه في رحلتك التعليمية</h2>
+              <p>
+                أدوات تعليمية تساعد الطالب والمدرس وولي الأمر على تنظيم
+                الرحلة التعليمية ومتابعة التقدم.
+              </p>
+            </div>
+
+            <div class="features-grid">
+
+              <article class="feature-card">
+                <div class="feature-icon feature-icon-blue" aria-hidden="true">01</div>
+                <h3>اختر مدرسك</h3>
+                <p>
+                  تعرّف على المدرسين وموادهم وتفاصيل الكورسات قبل اتخاذ قرارك.
+                </p>
+              </article>
+
+              <article class="feature-card">
+                <div class="feature-icon feature-icon-purple" aria-hidden="true">02</div>
+                <h3>تعلّم في مكان واحد</h3>
+                <p>
+                  اجمع الدروس والملفات والامتحانات في مساحة تعليمية منظمة.
+                </p>
+              </article>
+
+              <article class="feature-card">
+                <div class="feature-icon feature-icon-blue" aria-hidden="true">03</div>
+                <h3>تابع نتائجك</h3>
+                <p>
+                  راجع نتائج الامتحانات وتقدّمك الدراسي عندما تكون بياناتك متاحة.
+                </p>
+              </article>
+
+              <article class="feature-card">
+                <div class="feature-icon feature-icon-purple" aria-hidden="true">04</div>
+                <h3>تواصل مع ولي أمرك</h3>
+                <p>
+                  تتيح المنصة مساحة مخصصة لمتابعة الاشتراكات والتقدم الدراسي.
+                </p>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- المواد الدراسية -->
+        <section id="subjects-section" class="subjects-section section-padding">
+          <div class="container">
+            <div class="section-heading">
+              <span class="section-kicker">اكتشف مجالات التعلّم</span>
+              <h2>المواد الدراسية</h2>
+              <p>اختر المادة التي تبحث عنها واكتشف المدرسين والكورسات المتاحة.</p>
+            </div>
+
+            <div class="subjects-grid" id="subjects-grid">
+              <article class="subject-card">
+                <span class="subject-number">01</span>
+                <div class="subject-symbol subject-symbol-blue" aria-hidden="true">ف</div>
+                <h3>الفيزياء</h3>
+                <p>افهم القوانين والتطبيقات خطوة بخطوة.</p>
+                <button type="button" class="text-link" data-action="browse-subject" data-subject="الفيزياء">
+                  اكتشف المدرسين <span aria-hidden="true">←</span>
+                </button>
+              </article>
+
+              <article class="subject-card">
+                <span class="subject-number">02</span>
+                <div class="subject-symbol subject-symbol-purple" aria-hidden="true">ك</div>
+                <h3>الكيمياء</h3>
+                <p>نظّم دراستك وراجع المفاهيم الأساسية.</p>
+                <button type="button" class="text-link" data-action="browse-subject" data-subject="الكيمياء">
+                  اكتشف المدرسين <span aria-hidden="true">←</span>
+                </button>
+              </article>
+
+              <article class="subject-card">
+                <span class="subject-number">03</span>
+                <div class="subject-symbol subject-symbol-blue" aria-hidden="true">أ</div>
+                <h3>الأحياء</h3>
+                <p>راجع الدروس والمعلومات بطريقة منظمة.</p>
+                <button type="button" class="text-link" data-action="browse-subject" data-subject="الأحياء">
+                  اكتشف المدرسين <span aria-hidden="true">←</span>
+                </button>
+              </article>
+
+              <article class="subject-card">
+                <span class="subject-number">04</span>
+                <div class="subject-symbol subject-symbol-purple" aria-hidden="true">ع</div>
+                <h3>اللغة العربية</h3>
+                <p>طوّر مهارات القراءة والنحو والكتابة.</p>
+                <button type="button" class="text-link" data-action="browse-subject" data-subject="اللغة العربية">
+                  اكتشف المدرسين <span aria-hidden="true">←</span>
+                </button>
+              </article>
+
+              <article class="subject-card">
+                <span class="subject-number">05</span>
+                <div class="subject-symbol subject-symbol-blue" aria-hidden="true">EN</div>
+                <h3>اللغة الإنجليزية</h3>
+                <p>طوّر لغتك من خلال الدروس والتدريبات.</p>
+                <button type="button" class="text-link" data-action="browse-subject" data-subject="اللغة الإنجليزية">
+                  اكتشف المدرسين <span aria-hidden="true">←</span>
+                </button>
+              </article>
+
+              <article class="subject-card">
+                <span class="subject-number">06</span>
+                <div class="subject-symbol subject-symbol-purple" aria-hidden="true">+</div>
+                <h3>مواد أخرى</h3>
+                <p>ستظهر المواد الأخرى وفقًا للمدرسين المعتمدين.</p>
+                <button type="button" class="text-link" data-action="browse-teachers">
+                  تصفّح المدرسين <span aria-hidden="true">←</span>
+                </button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- كيف تعمل المنصة -->
+        <section id="how-it-works-section" class="how-section section-padding">
+          <div class="container">
+            <div class="section-heading">
+              <span class="section-kicker">البداية سهلة</span>
+              <h2>ابدأ رحلتك في ثلاث خطوات</h2>
+              <p>خطوات واضحة من إنشاء الحساب حتى الوصول إلى محتواك التعليمي.</p>
+            </div>
+
+            <div class="steps-grid">
+              <article class="step-card">
+                <span class="step-number">01</span>
+                <h3>أنشئ حسابك</h3>
+                <p>سجّل كطالب أو ولي أمر، أو قدّم طلب انضمام بصفتك مدرسًا.</p>
+              </article>
+
+              <article class="step-card">
+                <span class="step-number">02</span>
+                <h3>اختر ما يناسبك</h3>
+                <p>استعرض ملفات المدرسين والكورسات وتفاصيل الاشتراكات المتاحة.</p>
+              </article>
+
+              <article class="step-card">
+                <span class="step-number">03</span>
+                <h3>ابدأ التعلّم</h3>
+                <p>بعد تفعيل حسابك واشتراكك، تابع الدروس والامتحانات من حسابك.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- دعوة للتسجيل -->
+        <section class="cta-section">
+          <div class="container">
+            <div class="cta-card">
+              <div class="cta-content">
+                <span class="section-kicker">مستقبلك يبدأ الآن</span>
+                <h2>جاهز تخطو أول خطوة؟</h2>
+                <p>أنشئ حسابك وابدأ في اكتشاف رحلتك التعليمية.</p>
+              </div>
+
+              <button type="button" class="btn btn-white btn-large" data-action="open-register">
+                إنشاء حساب مجاني
+                <span aria-hidden="true">←</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- صفحة المدرسين -->
+      <section id="teachers-page" class="page-section inner-page" data-page="teachers" hidden>
+        <div class="container">
+          <div class="page-heading">
+            <span class="section-kicker">اختر من يناسبك</span>
+            <h1>اكتشف المدرسين</h1>
+            <p>ابحث عن المدرس والمادة المناسبة لرحلتك التعليمية.</p>
+          </div>
+
+          <form class="search-panel" id="teacher-search-form">
+            <label class="search-field">
+              <span class="visually-hidden">البحث عن مدرس</span>
+              <input
+                type="search"
+                id="teacher-search"
+                name="q"
+                placeholder="ابحث باسم المدرس أو المادة..."
+                autocomplete="off"
+              >
+            </label>
+
+            <label class="filter-field">
+              <span class="visually-hidden">تصفية حسب المادة</span>
+              <select id="teacher-subject-filter" name="subject">
+                <option value="">كل المواد</option>
+                <option value="الفيزياء">الفيزياء</option>
+                <option value="الكيمياء">الكيمياء</option>
+                <option value="الأحياء">الأحياء</option>
+                <option value="اللغة العربية">اللغة العربية</option>
+                <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+              </select>
+            </label>
+
+            <button type="submit" class="btn btn-primary">بحث</button>
+          </form>
+
+          <div class="content-notice" id="teachers-notice">
+            <span class="notice-icon" aria-hidden="true">i</span>
+            <p>
+              ستظهر هنا ملفات المدرسين المعتمدين بعد ربط المنصة بقاعدة البيانات.
+              لا توجد حاليًا قائمة مدرسين حقيقية محمّلة.
+            </p>
+          </div>
+
+          <div class="teachers-grid" id="teachers-grid">
+            <div class="empty-state">
+              <div class="empty-state-icon" aria-hidden="true">M</div>
+              <h2>اكتشف مدرسك المناسب</h2>
+              <p>ستظهر ملفات المدرسين هنا بعد تحميل البيانات الفعلية من الخادم.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- صفحة تسجيل الدخول وإنشاء الحساب -->
+      <section id="auth-page" class="page-section auth-page" data-page="auth" hidden>
+        <div class="container auth-container">
+
+          <div class="auth-aside">
+            <img src="logo.svg" alt="شعار المستقبلي" width="72" height="72">
+            <span class="section-kicker">أهلًا بك في المستقبلي</span>
+            <h1>خطوتك القادمة<br><span class="gradient-text">نحو مستقبل أفضل</span></h1>
+            <p>
+              مساحة تعليمية تجمعك بمدرسيك وتساعدك على تنظيم رحلتك الدراسية.
+            </p>
+
+            <div class="auth-aside-points">
+              <div><span>✓</span> حسابات مخصصة حسب دور المستخدم</div>
+              <div><span>✓</span> محتوى تعليمي منظم</div>
+              <div><span>✓</span> متابعة الاشتراكات والنتائج</div>
+            </div>
+          </div>
+
+          <div class="auth-card">
+            <div class="auth-card-header">
+              <div class="auth-tabs" role="tablist" aria-label="نوع العملية">
+                <button
+                  type="button"
+                  class="auth-tab active"
+                  id="login-tab"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="login-panel"
+                  data-auth-tab="login"
+                >
+                  تسجيل الدخول
+                </button>
+
+                <button
+                  type="button"
+                  class="auth-tab"
+                  id="register-tab"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="register-panel"
+                  data-auth-tab="register"
+                >
+                  حساب جديد
+                </button>
+              </div>
+
+              <button type="button" class="auth-back" data-action="back-home">
+                العودة للرئيسية
+              </button>
+            </div>
+
+            <!-- تسجيل الدخول -->
+            <div class="auth-panel" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+              <h2>مرحبًا بعودتك</h2>
+              <p class="auth-subtitle">أدخل بيانات حسابك للمتابعة.</p>
+
+              <form id="login-form" novalidate>
+                <label class="form-field">
+                  <span>البريد الإلكتروني</span>
+                  <input
+                    type="email"
+                    name="email"
+                    id="login-email"
+                    placeholder="name@example.com"
+                    autocomplete="email"
+                    required
+                  >
+                </label>
+
+                <label class="form-field">
+                  <span>كلمة المرور</span>
+                  <input
+                    type="password"
+                    name="password"
+                    id="login-password"
+                    placeholder="أدخل كلمة المرور"
+                    autocomplete="current-password"
+                    minlength="8"
+                    required
+                  >
+                </label>
+
+                <div class="form-options">
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="remember" id="login-remember">
+                    <span>تذكّرني</span>
+                  </label>
+
+                  <button type="button" class="text-button" data-action="forgot-password">
+                    نسيت كلمة المرور؟
+                  </button>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="login-submit">
+                  تسجيل الدخول
+                </button>
+
+                <p class="form-message" id="login-message" role="status" aria-live="polite"></p>
+              </form>
+
+              <p class="auth-switch">
+                ليس لديك حساب؟
+                <button type="button" class="text-button" data-auth-tab="register">
+                  أنشئ حسابًا جديدًا
+                </button>
+              </p>
+            </div>
+
+            <!-- إنشاء حساب -->
+            <div class="auth-panel" id="register-panel" role="tabpanel" aria-labelledby="register-tab" hidden>
+              <h2>أنشئ حسابك</h2>
+              <p class="auth-subtitle">اختر نوع الحساب وأدخل البيانات المطلوبة.</p>
+
+              <form id="register-form" novalidate>
+                <label class="form-field">
+                  <span>الاسم الكامل</span>
+                  <input
+                    type="text"
+                    name="name"
+                    id="register-name"
+                    placeholder="اكتب اسمك الكامل"
+                    autocomplete="name"
+                    minlength="3"
+                    required
+                  >
+                </label>
+
+                <label class="form-field">
+                  <span>البريد الإلكتروني</span>
+                  <input
+                    type="email"
+                    name="email"
+                    id="register-email"
+                    placeholder="name@example.com"
+                    autocomplete="email"
+                    required
+                  >
+                </label>
+
+                <label class="form-field">
+                  <span>رقم الهاتف</span>
+                  <input
+                    type="tel"
+                    name="phone"
+                    id="register-phone"
+                    placeholder="01xxxxxxxxx"
+                    autocomplete="tel"
+                    inputmode="tel"
+                    required
+                  >
+                </label>
+
+                <label class="form-field">
+                  <span>نوع الحساب</span>
+                  <select name="role" id="register-role" required>
+                    <option value="student">طالب</option>
+                    <option value="parent">ولي أمر</option>
+                    <option value="teacher">مدرس - يتطلب مراجعة الطلب</option>
+                  </select>
+                </label>
+
+                <div class="teacher-application-fields" id="teacher-application-fields" hidden>
+                  <div class="field-note">
+                    طلب انضمام المدرس يحتاج إلى مراجعة الإدارة قبل تفعيل حساب المدرس.
+                  </div>
+
+                  <label class="form-field">
+                    <span>المادة الدراسية</span>
+                    <input
+                      type="text"
+                      name="subject"
+                      id="register-teacher-subject"
+                      placeholder="مثال: الفيزياء"
+                    >
+                  </label>
+
+                  <label class="form-field">
+                    <span>نبذة عن المدرس</span>
+                    <textarea
+                      name="bio"
+                      id="register-teacher-bio"
+                      rows="3"
+                      placeholder="اكتب نبذة مختصرة عن خبرتك..."
+                    ></textarea>
+                  </label>
+                </div>
+
+                <label class="form-field">
+                  <span>كلمة المرور</span>
+                  <input
+                    type="password"
+                    name="password"
+                    id="register-password"
+                    placeholder="8 أحرف على الأقل"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                  >
+                </label>
+
+                <label class="form-field">
+                  <span>تأكيد كلمة المرور</span>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    id="register-confirm-password"
+                    placeholder="أعد كتابة كلمة المرور"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                  >
+                </label>
+
+                <label class="checkbox-label terms-label">
+                  <input type="checkbox" name="terms" id="register-terms" required>
+                  <span>أوافق على شروط الاستخدام وسياسة الخصوصية.</span>
+                </label>
+
+                <button type="submit" class="btn btn-primary btn-full" id="register-submit">
+                  إنشاء الحساب
+                </button>
+
+                <p class="form-message" id="register-message" role="status" aria-live="polite"></p>
+              </form>
+
+              <p class="auth-switch">
+                لديك حساب بالفعل؟
+                <button type="button" class="text-button" data-auth-tab="login">
+                  سجّل الدخول
+                </button>
+              </p>
+            </div>
+
+            <!-- استعادة كلمة المرور -->
+            <div class="auth-panel" id="forgot-password-panel" hidden>
+              <h2>استعادة كلمة المرور</h2>
+              <p class="auth-subtitle">
+                أدخل بريدك الإلكتروني لبدء عملية الاستعادة بعد ربط خدمة الحسابات.
+              </p>
+
+              <form id="forgot-password-form" novalidate>
+                <label class="form-field">
+                  <span>البريد الإلكتروني</span>
+                  <input
+                    type="email"
+                    name="email"
+                    id="forgot-email"
+                    placeholder="name@example.com"
+                    autocomplete="email"
+                    required
+                  >
+                </label>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                  طلب استعادة كلمة المرور
+                </button>
+
+                <p class="form-message" id="forgot-message" role="status" aria-live="polite"></p>
+              </form>
+
+              <button type="button" class="text-button back-to-login" data-auth-tab="login">
+                العودة لتسجيل الدخول
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- صفحة تقديم طلب انضمام مدرس -->
+      <section id="teacher-join-page" class="page-section inner-page" data-page="teacher-join" hidden>
+        <div class="container narrow-container">
+          <div class="page-heading">
+            <span class="section-kicker">انضم إلى المستقبلي</span>
+            <h1>طلب انضمام مدرس</h1>
+            <p>قدّم بياناتك لمراجعتها من إدارة المنصة.</p>
+          </div>
+
+          <div class="content-notice">
+            <span class="notice-icon" aria-hidden="true">i</span>
+            <p>
+              إرسال الطلب لا يعني الموافقة التلقائية. سيتم تفعيل صلاحيات المدرس
+              بعد مراجعة الإدارة وتسجيل الموافقة في النظام.
+            </p>
+          </div>
+
+          <form class="form-card" id="teacher-join-form">
+            <label class="form-field">
+              <span>الاسم الكامل</span>
+              <input type="text" name="name" required minlength="3">
+            </label>
+
+            <label class="form-field">
+              <span>البريد الإلكتروني</span>
+              <input type="email" name="email" required>
+            </label>
+
+            <label class="form-field">
+              <span>رقم الهاتف</span>
+              <input type="tel" name="phone" required inputmode="tel">
+            </label>
+
+            <label class="form-field">
+              <span>المادة الدراسية</span>
+              <input type="text" name="subject" required>
+            </label>
+
+            <label class="form-field">
+              <span>الخبرة والمؤهلات</span>
+              <textarea name="experience" rows="4" required></textarea>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              إرسال طلب الانضمام
+            </button>
+
+            <p class="form-message" id="teacher-join-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- لوحة المستخدم -->
+      <section id="dashboard-page" class="page-section inner-page" data-page="dashboard" hidden>
+        <div class="container">
+          <div class="dashboard-header">
+            <div>
+              <span class="section-kicker">مساحتك الشخصية</span>
+              <h1 id="dashboard-title">لوحة التحكم</h1>
+              <p id="dashboard-welcome">مرحبًا بك في المستقبلي.</p>
+            </div>
+
+            <button type="button" class="btn btn-outline" data-action="logout">
+              تسجيل الخروج
+            </button>
+          </div>
+
+          <div class="content-notice">
+            <span class="notice-icon" aria-hidden="true">i</span>
+            <p>
+              محتوى لوحة التحكم والصلاحيات والبيانات سيُحمّل من الخادم بعد
+              تنفيذ وربط خدمات الحسابات وقاعدة البيانات.
+            </p>
+          </div>
+
+          <div class="dashboard-grid" id="dashboard-widgets">
+            <article class="dashboard-card">
+              <span class="dashboard-card-label">الحساب</span>
+              <h2 id="dashboard-account-name">—</h2>
+              <p id="dashboard-account-role">لم يتم تحميل بيانات الحساب.</p>
+            </article>
+
+            <article class="dashboard-card">
+              <span class="dashboard-card-label">الاشتراكات</span>
+              <h2>الاشتراكات التعليمية</h2>
+              <p>ستظهر الاشتراكات الفعلية بعد ربط قاعدة البيانات.</p>
+            </article>
+
+            <article class="dashboard-card">
+              <span class="dashboard-card-label">التقدم الدراسي</span>
+              <h2>نتائجك وتقدمك</h2>
+              <p>ستظهر النتائج الحقيقية عند توفر بيانات الامتحانات.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- صفحة الدفع -->
+      <section id="payments-page" class="page-section inner-page" data-page="payments" hidden>
+        <div class="container narrow-container">
+          <div class="page-heading">
+            <span class="section-kicker">الاشتراكات</span>
+            <h1>المدفوعات والاشتراكات</h1>
+            <p>متابعة الاشتراك وإرسال إثبات الدفع للمراجعة.</p>
+          </div>
+
+          <div class="content-notice">
+            <span class="notice-icon" aria-hidden="true">i</span>
+            <p>
+              لن يتم تأكيد أي عملية دفع أو تفعيل اشتراك تلقائيًا عند رفع صورة.
+              يلزم تنفيذ خدمة الدفع ومراجعة الإثبات من الإدارة قبل التأكيد.
+            </p>
+          </div>
+
+          <form class="form-card" id="payment-proof-form">
+            <label class="form-field">
+              <span>نوع الاشتراك</span>
+              <select name="subscriptionType" required>
+                <option value="">اختر نوع الاشتراك</option>
+                <option value="course">اشتراك طالب في كورس</option>
+                <option value="teacher-platform">اشتراك مدرس في المنصة</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>رقم مرجع التحويل</span>
+              <input type="text" name="transferReference" required>
+            </label>
+
+            <label class="form-field">
+              <span>المبلغ المحوّل بالجنيه المصري</span>
+              <input type="number" name="amount" min="1" step="0.01" required>
+            </label>
+
+            <label class="form-field">
+              <span>صورة إثبات التحويل</span>
+              <input
+                type="file"
+                name="proof"
+                id="payment-proof-file"
+                accept="image/jpeg,image/png,image/webp,application/pdf"
+                required
+              >
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              إرسال الإثبات للمراجعة
+            </button>
+
+            <p class="form-message" id="payment-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- صفحة الامتحانات -->
+      <section id="exams-page" class="page-section inner-page" data-page="exams" hidden>
+        <div class="container">
+          <div class="page-heading">
+            <span class="section-kicker">التقييم والمتابعة</span>
+            <h1>الامتحانات والنتائج</h1>
+            <p>مكان مخصص للامتحانات والنتائج المرتبطة بحسابك.</p>
+          </div>
+
+          <div class="empty-state">
+            <div class="empty-state-icon" aria-hidden="true">✓</div>
+            <h2>امتحاناتك في مكان واحد</h2>
+            <p>ستظهر الامتحانات والنتائج الفعلية بعد ربط خدمات الامتحانات والخادم.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- صفحة الدعم -->
+      <section id="support-page" class="page-section inner-page" data-page="support" hidden>
+        <div class="container narrow-container">
+          <div class="page-heading">
+            <span class="section-kicker">نحن هنا للمساعدة</span>
+            <h1>الدعم الفني</h1>
+            <p>أرسل استفسارك لتجهيز نظام تذاكر الدعم عند ربط الخادم.</p>
+          </div>
+
+          <form class="form-card" id="support-form">
+            <label class="form-field">
+              <span>عنوان الطلب</span>
+              <input type="text" name="subject" required minlength="3">
+            </label>
+
+            <label class="form-field">
+              <span>نوع الطلب</span>
+              <select name="category" required>
+                <option value="account">الحساب</option>
+                <option value="subscription">الاشتراكات والمدفوعات</option>
+                <option value="course">الكورسات والدروس</option>
+                <option value="technical">مشكلة تقنية</option>
+                <option value="other">أخرى</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>تفاصيل الطلب</span>
+              <textarea name="message" rows="5" required minlength="10"></textarea>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              إرسال طلب الدعم
+            </button>
+
+            <p class="form-message" id="support-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- التذييل -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+
+        <div class="footer-brand">
+          <a href="#home" class="brand" data-route="home">
+            <img src="logo.svg" alt="" class="brand-logo" width="44" height="44">
+            <span class="brand-copy">
+              <strong>المستقبلي</strong>
+              <small>MOSTAQBALI</small>
+            </span>
+          </a>
+
+          <p>
+            تجربة تعليمية منظمة تساعد الطلاب والمدرسين وأولياء الأمور
+            على متابعة رحلة التعلّم.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <h3>تصفّح المنصة</h3>
+          <a href="#home" data-route="home">الرئيسية</a>
+          <a href="#teachers" data-route="teachers">المدرسون</a>
+          <a href="#subjects" data-route="subjects">المواد الدراسية</a>
+          <a href="#support" data-route="support">الدعم الفني</a>
+        </div>
+
+        <div class="footer-links">
+          <h3>حسابك</h3>
+          <button type="button" data-action="open-login">تسجيل الدخول</button>
+          <button type="button" data-action="open-register">إنشاء حساب طالب</button>
+          <button type="button" data-action="join-teacher">انضم كمدرس</button>
+          <button type="button" data-action="open-parent-info">حساب ولي الأمر</button>
+        </div>
+
+        <div class="footer-note">
+          <h3>تعليم يواكب المستقبل</h3>
+          <p>
+            تُعرض بيانات المدرسين والكورسات والاشتراكات بعد اعتمادها
+            وتحميلها من النظام الفعلي.
+          </p>
+        </div>
+
       </div>
-    </section>
 
-    <section class="features" id="features">
-      <article class="feature">
-        <h3>🎓 تعلم في مكان واحد</h3>
-        <p>تابع موادك ودروسك التعليمية من واجهة منظمة.</p>
-      </article>
+      <div class="container footer-bottom">
+        <span>© <span id="current-year">2026</span> المستقبلي MOSTAQBALI</span>
+        <span>صُمّمت رحلتك التعليمية لتبدأ بخطوة.</span>
+      </div>
+    </footer>
 
-      <article class="feature">
-        <h3>📝 اختبر مستواك</h3>
-        <p>استعد للامتحانات وتابع نتائجك وتقدمك.</p>
-      </article>
+    <!-- القائمة السفلية للموبايل -->
+    <nav class="mobile-bottom-nav" aria-label="التنقل السريع">
+      <a href="#home" data-route="home" class="mobile-nav-item active">
+        <span aria-hidden="true">⌂</span>
+        <small>الرئيسية</small>
+      </a>
 
-      <article class="feature">
-        <h3>🚀 خطط لمستقبلك</h3>
-        <p>نظّم رحلتك التعليمية خطوة بخطوة.</p>
-      </article>
-    </section>
+      <a href="#teachers" data-route="teachers" class="mobile-nav-item">
+        <span aria-hidden="true">▤</span>
+        <small>المدرسون</small>
+      </a>
 
-    <footer>المستقبلي MOSTAQBALI — مستقبلك يبدأ من هنا.</footer>
-  </main>
+      <button type="button" class="mobile-nav-item" data-action="open-login">
+        <span aria-hidden="true">◎</span>
+        <small>حسابي</small>
+      </button>
 
-  <script>
-    (() => {
-      const splash = document.getElementById("splash");
-      const home = document.getElementById("home");
+      <a href="#support" data-route="support" class="mobile-nav-item">
+        <span aria-hidden="true">?</span>
+        <small>الدعم</small>
+      </a>
+    </nav>
 
-      function openHome() {
-        splash.style.opacity = "0";
+  </div>
 
-        setTimeout(() => {
-          splash.style.display = "none";
-          home.style.display = "block";
-          document.body.style.background = "#f5f7ff";
-        }, 250);
-      }
+  <!-- نافذة الرسائل العامة -->
+  <div
+    id="toast-region"
+    class="toast-region"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
 
-      // الانتقال تلقائيًا بعد ثانية واحدة.
-      window.setTimeout(openHome, 1000);
+  <!-- طبقة تحميل العمليات -->
+  <div id="loading-overlay" class="loading-overlay" hidden>
+    <div class="loading-indicator">
+      <span class="loading-spinner"></span>
+      <p id="loading-message">جارٍ التحميل...</p>
+    </div>
+  </div>
 
-      document.getElementById("exploreBtn").addEventListener("click", () => {
-        document.getElementById("features").scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      });
-
-      function showNotice() {
-        alert("واجهة البداية جاهزة. الخطوة التالية هي ربط تسجيل الدخول والحسابات بقاعدة بيانات آمنة.");
-      }
-
-      document.getElementById("loginBtn").addEventListener("click", showNotice);
-      document.getElementById("startBtn").addEventListener("click", showNotice);
-    })();
-  </script>
-
+  <noscript>
+    <div class="noscript-message">
+      تحتاج منصة المستقبلي إلى تفعيل JavaScript لتشغيل واجهتها.
+    </div>
+  </noscript>
 </body>
-</html>
+                </html>
