@@ -1,1 +1,459 @@
+<!DOCTYPE html><html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#101b3d">
+  <meta name="description" content="المستقبلي منصة تعليمية تجمع الطلاب والمدرسين وأولياء الأمور في تجربة تعليمية متكاملة.">
+  <meta name="mobile-web-app-capable" content="yes">  <title>المستقبلي | MOSTAQBALI</title>  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head><body>
+  <div id="appLoader" class="app-loader">
+    <div class="loader-brand">
+      <img src="assets/logo.svg" alt="شعار المستقبلي">
+      <div>
+        <strong>المستقبلي</strong>
+        <span>MOSTAQBALI</span>
+      </div>
+    </div>
+    <div class="loader-track"><span></span></div>
+    <p>مستقبلك يبدأ من هنا.</p>
+  </div>  <div id="toastContainer" class="toast-container" aria-live="polite"></div>  <section id="authScreen" class="auth-screen hidden">
+    <div class="auth-visual">
+      <div class="auth-visual-content">
+        <a class="brand brand-light" href="#" data-action="go-home">
+          <img src="assets/logo.svg" alt="شعار المستقبلي">
+          <span>
+            <strong>المستقبلي</strong>
+            <small>MOSTAQBALI</small>
+          </span>
+        </a>    <div class="auth-hero-copy">
+      <span class="eyebrow">منصتك التعليمية المتكاملة</span>
+      <h1>خطوة اليوم<br>تصنع <span>مستقبلك.</span></h1>
+      <p>تعلم، اختبر مستواك، تابع تقدمك، وكن أقرب إلى أهدافك كل يوم.</p>
+    </div>
 
+    <div class="auth-feature-list">
+      <div><span class="feature-symbol">01</span><span>دروس منظمة حسب مرحلتك الدراسية</span></div>
+      <div><span class="feature-symbol">02</span><span>امتحانات ونتائج ومتابعة مستمرة</span></div>
+      <div><span class="feature-symbol">03</span><span>تواصل تعليمي مع المدرسين</span></div>
+    </div>
+
+    <div class="auth-decoration auth-decoration-one"></div>
+    <div class="auth-decoration auth-decoration-two"></div>
+  </div>
+</div>
+
+<div class="auth-panel">
+  <button class="icon-button auth-back" data-action="go-home" aria-label="العودة للرئيسية">←</button>
+
+  <div class="auth-mobile-brand">
+    <img src="assets/logo.svg" alt="المستقبلي">
+    <strong>المستقبلي</strong>
+  </div>
+
+  <div class="auth-form-wrap">
+    <div class="auth-heading">
+      <span class="section-kicker">أهلاً بك في المستقبلي</span>
+      <h2 id="authTitle">سجّل دخولك</h2>
+      <p id="authSubtitle">سجّل الدخول لمتابعة رحلتك التعليمية.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-auth-mode="login">تسجيل الدخول</button>
+      <button class="auth-tab" data-auth-mode="register">حساب جديد</button>
+    </div>
+
+    <form id="authForm" novalidate>
+      <div id="registerNameGroup" class="form-group hidden">
+        <label for="authName">الاسم بالكامل</label>
+        <input id="authName" name="name" type="text" autocomplete="name" placeholder="اكتب اسمك بالكامل">
+      </div>
+
+      <div class="form-group">
+        <label for="authEmail">البريد الإلكتروني</label>
+        <input id="authEmail" name="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="authPassword">كلمة المرور</label>
+        <div class="password-field">
+          <input id="authPassword" name="password" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور" minlength="8" required>
+          <button type="button" class="password-toggle" data-action="toggle-password" aria-label="إظهار كلمة المرور">عرض</button>
+        </div>
+      </div>
+
+      <div id="registerExtraFields" class="hidden">
+        <div class="form-group">
+          <label for="authRole">نوع الحساب</label>
+          <select id="authRole" name="role">
+            <option value="student">طالب</option>
+            <option value="teacher">مدرس</option>
+            <option value="parent">ولي أمر</option>
+          </select>
+        </div>
+
+        <div id="studentFields">
+          <div class="form-group">
+            <label for="authStage">المرحلة الدراسية</label>
+            <select id="authStage" name="stage">
+              <option value="">اختر المرحلة</option>
+              <option value="prep">المرحلة الإعدادية</option>
+              <option value="secondary">المرحلة الثانوية</option>
+              <option value="baccalaureate">البكالوريا</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="authGrade">الصف الدراسي</label>
+            <select id="authGrade" name="grade">
+              <option value="">اختر الصف</option>
+              <option value="first-prep">الأول الإعدادي</option>
+              <option value="second-prep">الثاني الإعدادي</option>
+              <option value="third-prep">الثالث الإعدادي</option>
+              <option value="first-secondary">الأول الثانوي</option>
+              <option value="second-secondary">الثاني الثانوي</option>
+              <option value="third-secondary">الثالث الثانوي</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="authTrack">الشعبة الدراسية</label>
+            <select id="authTrack" name="track">
+              <option value="">لم يتم التحديد</option>
+              <option value="science">علمي علوم</option>
+              <option value="math">علمي رياضة</option>
+              <option value="literary">أدبي</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="teacherFields" class="hidden">
+          <div class="form-group">
+            <label for="authSpecialty">التخصص</label>
+            <input id="authSpecialty" name="specialty" type="text" placeholder="مثال: مدرس فيزياء">
+          </div>
+
+          <div class="form-group">
+            <label for="authPhone">رقم الهاتف</label>
+            <input id="authPhone" name="phone" type="tel" autocomplete="tel" placeholder="رقم الهاتف">
+          </div>
+        </div>
+      </div>
+
+      <div id="authError" class="form-error hidden" role="alert"></div>
+
+      <button id="authSubmit" class="button button-primary button-full" type="submit">
+        تسجيل الدخول
+      </button>
+    </form>
+
+    <button id="forgotPasswordButton" class="forgot-password" data-action="forgot-password">
+      نسيت كلمة المرور؟
+    </button>
+
+    <div class="auth-security-note">
+      <span class="security-dot"></span>
+      <span>احرص على حماية بيانات حسابك وكلمة المرور.</span>
+    </div>
+
+    <p class="auth-legal">
+      باستخدامك المنصة، فإنك توافق على
+      <button data-action="show-terms">شروط الاستخدام</button>
+      و<button data-action="show-privacy">سياسة الخصوصية</button>.
+    </p>
+  </div>
+</div>
+
+  </section>  <div id="mainApp" class="main-app hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <a href="#" class="brand" data-action="navigate" data-page="overview">
+          <img src="assets/logo.svg" alt="المستقبلي">
+          <span>
+            <strong>المستقبلي</strong>
+            <small>MOSTAQBALI</small>
+          </span>
+        </a>
+        <button class="icon-button sidebar-close" data-action="close-sidebar" aria-label="إغلاق القائمة">×</button>
+      </div>  <div class="sidebar-user">
+    <div id="sidebarAvatar" class="avatar avatar-large">م</div>
+    <div class="sidebar-user-info">
+      <strong id="sidebarUserName">مستخدم المستقبلي</strong>
+      <span id="sidebarUserRole">طالب</span>
+    </div>
+    <span class="online-indicator"></span>
+  </div>
+
+  <div class="sidebar-section-label">القائمة الرئيسية</div>
+  <nav id="mainNavigation" class="sidebar-navigation">
+    <button class="nav-item active" data-action="navigate" data-page="overview">
+      <span class="nav-icon">⌂</span><span>الرئيسية</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="subjects" data-roles="student">
+      <span class="nav-icon">▦</span><span>المواد الدراسية</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="courses">
+      <span class="nav-icon">▤</span><span>الكورسات والدروس</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="exams" data-roles="student,teacher,admin">
+      <span class="nav-icon">✓</span><span>الامتحانات</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="teachers" data-roles="student,parent,admin">
+      <span class="nav-icon">♙</span><span>المدرسون</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="groups" data-roles="student,teacher,admin">
+      <span class="nav-icon">▧</span><span>المجموعات التعليمية</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="progress" data-roles="student,parent,admin">
+      <span class="nav-icon">↗</span><span>مستواي الدراسي</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="students" data-roles="teacher,admin">
+      <span class="nav-icon">♧</span><span>الطلاب</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="parents" data-roles="parent,admin">
+      <span class="nav-icon">♧</span><span>متابعة الأبناء</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-section-label">الحساب والخدمات</div>
+  <nav class="sidebar-navigation">
+    <button class="nav-item" data-action="navigate" data-page="subscriptions">
+      <span class="nav-icon">◇</span><span>الاشتراكات</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="notifications">
+      <span class="nav-icon">♧</span><span>الإشعارات</span>
+      <span id="notificationBadge" class="nav-badge hidden">0</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="support">
+      <span class="nav-icon">?</span><span>خدمة العملاء</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="profile">
+      <span class="nav-icon">♙</span><span>الملف الشخصي</span>
+    </button>
+    <button class="nav-item" data-action="navigate" data-page="settings">
+      <span class="nav-icon">⚙</span><span>الإعدادات</span>
+    </button>
+    <button class="nav-item admin-only hidden" data-action="navigate" data-page="admin" data-roles="admin">
+      <span class="nav-icon">▣</span><span>إدارة المنصة</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="help-card">
+      <div class="help-card-icon">?</div>
+      <strong>هل تحتاج إلى مساعدة؟</strong>
+      <p>فريق الدعم جاهز لمساعدتك.</p>
+      <button data-action="navigate" data-page="support">تواصل مع الدعم ←</button>
+    </div>
+
+    <button class="logout-button" data-action="logout">
+      <span>↪</span> تسجيل الخروج
+    </button>
+  </div>
+</aside>
+
+<div id="sidebarOverlay" class="sidebar-overlay" data-action="close-sidebar"></div>
+
+<main class="app-content">
+  <header class="topbar">
+    <div class="topbar-start">
+      <button class="icon-button menu-toggle" data-action="toggle-sidebar" aria-label="فتح القائمة">☰</button>
+      <div class="breadcrumb">
+        <span>المستقبلي</span><span class="breadcrumb-divider">/</span>
+        <strong id="breadcrumbCurrent">الرئيسية</strong>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <label class="global-search">
+        <span>⌕</span>
+        <input id="globalSearch" type="search" placeholder="ابحث عن مادة أو مدرس..." autocomplete="off">
+        <kbd>بحث</kbd>
+      </label>
+
+      <button class="icon-button notification-button" data-action="navigate" data-page="notifications" aria-label="الإشعارات">
+        ♧<span id="topNotificationDot" class="notification-dot hidden"></span>
+      </button>
+
+      <button class="topbar-profile" data-action="navigate" data-page="profile">
+        <span id="topbarAvatar" class="avatar">م</span>
+        <span class="topbar-profile-name">
+          <strong id="topbarUserName">مستخدم المستقبلي</strong>
+          <small id="topbarUserRole">طالب</small>
+        </span>
+        <span class="profile-chevron">⌄</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="pageContainer" class="page-container">
+    <section class="welcome-banner">
+      <div class="welcome-copy">
+        <span class="welcome-tag"><span></span> رحلتك التعليمية تبدأ الآن</span>
+        <h1>أهلاً بك، <span id="welcomeName">بطل المستقبل</span></h1>
+        <p id="welcomeDescription">نظّم وقتك، تابع دروسك، واجعل كل يوم خطوة جديدة نحو هدفك.</p>
+        <div class="welcome-actions">
+          <button class="button button-white" data-action="navigate" data-page="courses">استكشف الدروس <span>←</span></button>
+          <button class="button button-outline-light" data-action="navigate" data-page="progress">تابع تقدمك</button>
+        </div>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <div class="art-orbit art-orbit-one"></div>
+        <div class="art-orbit art-orbit-two"></div>
+        <div class="art-book">
+          <div class="book-page"></div>
+          <div class="book-page"></div>
+          <div class="book-spine"></div>
+        </div>
+        <div class="art-star art-star-one">✦</div>
+        <div class="art-star art-star-two">✧</div>
+        <div class="art-floating-card">
+          <span>هدفك يستحق</span>
+          <strong>كل يوم مجهود</strong>
+        </div>
+      </div>
+      <div class="banner-glow"></div>
+    </section>
+
+    <div id="roleNotice" class="role-notice hidden"></div>
+
+    <section id="dashboardStats" class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon stat-blue">▤</span>
+          <span class="stat-trend">التعلم</span>
+        </div>
+        <strong id="statCourses">0</strong>
+        <span class="stat-label">الكورسات المتاحة لحسابك</span>
+        <div class="stat-bottom-line"><span style="width:70%"></span></div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon stat-purple">✓</span>
+          <span class="stat-trend">التقييم</span>
+        </div>
+        <strong id="statExams">0</strong>
+        <span class="stat-label">الامتحانات المتاحة</span>
+        <div class="stat-bottom-line purple-line"><span style="width:55%"></span></div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon stat-green">↗</span>
+          <span class="stat-trend">التقدم</span>
+        </div>
+        <strong id="statProgress">0%</strong>
+        <span class="stat-label">نسبة تقدمك المسجلة</span>
+        <div class="stat-bottom-line green-line"><span id="progressLine" style="width:0%"></span></div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon stat-orange">♧</span>
+          <span class="stat-trend">المجتمع</span>
+        </div>
+        <strong id="statGroups">0</strong>
+        <span class="stat-label">المجموعات التعليمية</span>
+        <div class="stat-bottom-line orange-line"><span style="width:35%"></span></div>
+      </article>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">اكتشف وتعلم</span>
+          <h2>المواد الدراسية</h2>
+          <p>اختر المادة التي تريد التركيز عليها.</p>
+        </div>
+        <button class="text-link" data-action="navigate" data-page="subjects">عرض جميع المواد ←</button>
+      </div>
+
+      <div id="subjectsGrid" class="subjects-grid"></div>
+    </section>
+
+    <section class="dashboard-lower-grid">
+      <div class="panel upcoming-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>الجدول التعليمي</h2>
+            <p>المحتوى المتاح في المنصة</p>
+          </div>
+          <span class="panel-heading-icon">▦</span>
+        </div>
+        <div id="upcomingList" class="upcoming-list"></div>
+      </div>
+
+      <div class="panel quick-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>الوصول السريع</h2>
+            <p>كل ما تحتاجه في مكان واحد</p>
+          </div>
+          <span class="panel-heading-icon">✦</span>
+        </div>
+
+        <div class="quick-actions">
+          <button class="quick-action" data-action="navigate" data-page="courses">
+            <span class="quick-action-icon quick-blue">▤</span>
+            <span><strong>الكورسات</strong><small>تصفح المحتوى التعليمي</small></span>
+            <b>←</b>
+          </button>
+          <button class="quick-action" data-action="navigate" data-page="exams">
+            <span class="quick-action-icon quick-purple">✓</span>
+            <span><strong>الامتحانات</strong><small>اختبر مستواك الدراسي</small></span>
+            <b>←</b>
+          </button>
+          <button class="quick-action" data-action="navigate" data-page="subscriptions">
+            <span class="quick-action-icon quick-green">◇</span>
+            <span><strong>الاشتراكات</strong><small>تابع خطط الاشتراك</small></span>
+            <b>←</b>
+          </button>
+          <button class="quick-action" data-action="navigate" data-page="support">
+            <span class="quick-action-icon quick-orange">?</span>
+            <span><strong>خدمة العملاء</strong><small>أرسل طلبًا إلى فريق الدعم</small></span>
+            <b>←</b>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">تعلم مع الأفضل</span>
+          <h2>المدرسون</h2>
+          <p>تعرّف على المدرسين المعتمدين في المنصة.</p>
+        </div>
+        <button class="text-link" data-action="navigate" data-page="teachers">اكتشف المدرسين ←</button>
+      </div>
+      <div id="teachersGrid" class="teachers-grid"></div>
+    </section>
+
+    <footer class="app-footer">
+      <div class="footer-brand">
+        <img src="assets/logo.svg" alt="">
+        <strong>المستقبلي</strong>
+      </div>
+      <span>مستقبلك يبدأ من هنا.</span>
+      <div class="footer-links">
+        <button data-action="show-terms">شروط الاستخدام</button>
+        <button data-action="show-privacy">الخصوصية</button>
+        <button data-action="navigate" data-page="support">الدعم الفني</button>
+      </div>
+      <span>© <span id="currentYear"></span> MOSTAQBALI</span>
+    </footer>
+  </div>
+</main>
+
+  </div>  <div id="modalRoot" class="modal-root hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" data-action="close-modal"></div>
+    <div class="modal-card">
+      <button class="modal-close icon-button" data-action="close-modal" aria-label="إغلاق">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>  <script src="config.js"></script>  <script src="app.js"></script></body>
+                                               </html>
