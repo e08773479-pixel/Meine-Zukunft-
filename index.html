@@ -1,459 +1,418 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#101b3d">
-  <meta name="description" content="المستقبلي منصة تعليمية تجمع الطلاب والمدرسين وأولياء الأمور في تجربة تعليمية متكاملة.">
-  <meta name="mobile-web-app-capable" content="yes">  <title>المستقبلي | MOSTAQBALI</title>  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-</head><body>
-  <div id="appLoader" class="app-loader">
-    <div class="loader-brand">
-      <img src="assets/logo.svg" alt="شعار المستقبلي">
-      <div>
-        <strong>المستقبلي</strong>
-        <span>MOSTAQBALI</span>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111936">
+  <title>المستقبلي | MOSTAQBALI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, Tahoma, sans-serif;
+    }
+
+    body {
+      background: #111936;
+      color: white;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 15% 20%, #4269d9 0%, transparent 42%),
+        radial-gradient(ellipse at 85% 75%, #6946c7 0%, transparent 45%),
+        linear-gradient(135deg, #101a3a, #202d61 55%, #111936);
+      transition: opacity .25s ease;
+    }
+
+    .screen::before,
+    .screen::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 65vw;
+      height: 65vw;
+      max-width: 500px;
+      max-height: 500px;
+      border-radius: 50%;
+      filter: blur(75px);
+      opacity: .35;
+      background: #547cff;
+      animation: float 7s ease-in-out infinite alternate;
+    }
+
+    .screen::before {
+      top: -20%;
+      left: -20%;
+    }
+
+    .screen::after {
+      bottom: -25%;
+      right: -15%;
+      background: #a16bff;
+      animation-delay: -3s;
+    }
+
+    .content {
+      width: min(90%, 420px);
+      text-align: center;
+      animation: appear .45s ease-out;
+    }
+
+    .brand-icon {
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 23px;
+      border-radius: 25px;
+      border: 1px solid #ffffff45;
+      background: linear-gradient(145deg, #ffffff2c, #ffffff08);
+      box-shadow: 0 12px 50px #00000025;
+      backdrop-filter: blur(15px);
+    }
+
+    .brand-icon svg {
+      width: 49px;
+      height: 49px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 7vw, 42px);
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .english {
+      margin-top: 8px;
+      font-size: 12px;
+      letter-spacing: 5px;
+      color: #d0d9ff;
+      direction: ltr;
+    }
+
+    .tagline {
+      margin-top: 23px;
+      font-size: 16px;
+      color: #e0e6ff;
+    }
+
+    .progress {
+      width: 180px;
+      height: 4px;
+      margin: 30px auto 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #ffffff30;
+    }
+
+    .progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #a8c0ff;
+      animation: load .85s linear forwards;
+    }
+
+    .loading {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #c3ccef;
+    }
+
+    .home {
+      display: none;
+      min-height: 100vh;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse at 90% 0%, #d9d4ff 0%, transparent 36%),
+        radial-gradient(ellipse at 0% 80%, #d5e7ff 0%, transparent 40%),
+        #f5f7ff;
+      color: #172044;
+    }
+
+    .nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0 25px;
+    }
+
+    .nav-brand {
+      font-weight: 800;
+      font-size: 23px;
+    }
+
+    .nav-brand small {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #6d75a0;
+      direction: ltr;
+    }
+
+    .login {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      background: #315ce9;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .hero {
+      max-width: 1100px;
+      min-height: 65vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 9px 14px;
+      border-radius: 30px;
+      background: #e6eaff;
+      color: #315ce9;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
+
+    .hero h2 {
+      max-width: 750px;
+      font-size: clamp(36px, 7vw, 66px);
+      line-height: 1.35;
+    }
+
+    .hero h2 span {
+      color: #315ce9;
+    }
+
+    .hero p {
+      max-width: 590px;
+      margin-top: 20px;
+      line-height: 2;
+      color: #646d8e;
+      font-size: 16px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .primary, .secondary {
+      padding: 15px 22px;
+      border-radius: 13px;
+      border: 0;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .primary {
+      color: white;
+      background: linear-gradient(135deg, #315ce9, #7656e9);
+      box-shadow: 0 9px 25px #315ce930;
+    }
+
+    .secondary {
+      background: white;
+      color: #27345e;
+      border: 1px solid #e0e5f5;
+    }
+
+    .features {
+      max-width: 1100px;
+      margin: 15px auto 35px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature {
+      padding: 22px;
+      border-radius: 18px;
+      border: 1px solid #e5e9f7;
+      background: #ffffffd9;
+      box-shadow: 0 10px 35px #24376b09;
+    }
+
+    .feature h3 {
+      margin-bottom: 9px;
+      font-size: 17px;
+    }
+
+    .feature p {
+      color: #737b98;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 30px auto 0;
+      text-align: center;
+      color: #7e86a2;
+      font-size: 12px;
+    }
+
+    @keyframes load {
+      to { width: 100%; }
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(35px, -25px) scale(1.15); }
+    }
+
+    @media (max-width: 600px) {
+      .features { grid-template-columns: 1fr; }
+      .home { padding: 18px; }
+      .hero { min-height: 60vh; }
+      .brand-icon { width: 68px; height: 68px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="screen" id="splash" aria-label="شاشة البداية">
+    <div class="content">
+      <div class="brand-icon">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <path d="M12 48V17L32 39L52 17V48"
+                stroke="white" stroke-width="6"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M23 49H41"
+                stroke="#AFC4FF" stroke-width="5"
+                stroke-linecap="round"/>
+        </svg>
       </div>
+
+      <h1>المستقبلي</h1>
+      <div class="english">MOSTAQBALI</div>
+      <p class="tagline">مستقبلك يبدأ من هنا.</p>
+
+      <div class="progress"><span></span></div>
+      <div class="loading">أهلاً بك في عالم المستقبلي</div>
     </div>
-    <div class="loader-track"><span></span></div>
-    <p>مستقبلك يبدأ من هنا.</p>
-  </div>  <div id="toastContainer" class="toast-container" aria-live="polite"></div>  <section id="authScreen" class="auth-screen hidden">
-    <div class="auth-visual">
-      <div class="auth-visual-content">
-        <a class="brand brand-light" href="#" data-action="go-home">
-          <img src="assets/logo.svg" alt="شعار المستقبلي">
-          <span>
-            <strong>المستقبلي</strong>
-            <small>MOSTAQBALI</small>
-          </span>
-        </a>    <div class="auth-hero-copy">
-      <span class="eyebrow">منصتك التعليمية المتكاملة</span>
-      <h1>خطوة اليوم<br>تصنع <span>مستقبلك.</span></h1>
-      <p>تعلم، اختبر مستواك، تابع تقدمك، وكن أقرب إلى أهدافك كل يوم.</p>
-    </div>
+  </section>
 
-    <div class="auth-feature-list">
-      <div><span class="feature-symbol">01</span><span>دروس منظمة حسب مرحلتك الدراسية</span></div>
-      <div><span class="feature-symbol">02</span><span>امتحانات ونتائج ومتابعة مستمرة</span></div>
-      <div><span class="feature-symbol">03</span><span>تواصل تعليمي مع المدرسين</span></div>
-    </div>
-
-    <div class="auth-decoration auth-decoration-one"></div>
-    <div class="auth-decoration auth-decoration-two"></div>
-  </div>
-</div>
-
-<div class="auth-panel">
-  <button class="icon-button auth-back" data-action="go-home" aria-label="العودة للرئيسية">←</button>
-
-  <div class="auth-mobile-brand">
-    <img src="assets/logo.svg" alt="المستقبلي">
-    <strong>المستقبلي</strong>
-  </div>
-
-  <div class="auth-form-wrap">
-    <div class="auth-heading">
-      <span class="section-kicker">أهلاً بك في المستقبلي</span>
-      <h2 id="authTitle">سجّل دخولك</h2>
-      <p id="authSubtitle">سجّل الدخول لمتابعة رحلتك التعليمية.</p>
-    </div>
-
-    <div class="auth-tabs">
-      <button class="auth-tab active" data-auth-mode="login">تسجيل الدخول</button>
-      <button class="auth-tab" data-auth-mode="register">حساب جديد</button>
-    </div>
-
-    <form id="authForm" novalidate>
-      <div id="registerNameGroup" class="form-group hidden">
-        <label for="authName">الاسم بالكامل</label>
-        <input id="authName" name="name" type="text" autocomplete="name" placeholder="اكتب اسمك بالكامل">
+  <main class="home" id="home">
+    <header class="nav">
+      <div class="nav-brand">
+        المستقبلي
+        <small>MOSTAQBALI</small>
       </div>
+      <button class="login" id="loginBtn">تسجيل الدخول</button>
+    </header>
 
-      <div class="form-group">
-        <label for="authEmail">البريد الإلكتروني</label>
-        <input id="authEmail" name="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+    <section class="hero">
+      <span class="badge">✨ رحلتك التعليمية تبدأ الآن</span>
+      <h2>اتعلم النهارده،<br><span>وابنِ مستقبلك بكرة.</span></h2>
+      <p>
+        اكتشف عالمًا من الدروس والكورسات والامتحانات،
+        وتابع تقدمك التعليمي في مكان واحد.
+        مستقبلك يستحق أفضل بداية.
+      </p>
+
+      <div class="actions">
+        <button class="primary" id="startBtn">ابدأ رحلتك التعليمية ←</button>
+        <button class="secondary" id="exploreBtn">اكتشف المنصة</button>
       </div>
-
-      <div class="form-group">
-        <label for="authPassword">كلمة المرور</label>
-        <div class="password-field">
-          <input id="authPassword" name="password" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور" minlength="8" required>
-          <button type="button" class="password-toggle" data-action="toggle-password" aria-label="إظهار كلمة المرور">عرض</button>
-        </div>
-      </div>
-
-      <div id="registerExtraFields" class="hidden">
-        <div class="form-group">
-          <label for="authRole">نوع الحساب</label>
-          <select id="authRole" name="role">
-            <option value="student">طالب</option>
-            <option value="teacher">مدرس</option>
-            <option value="parent">ولي أمر</option>
-          </select>
-        </div>
-
-        <div id="studentFields">
-          <div class="form-group">
-            <label for="authStage">المرحلة الدراسية</label>
-            <select id="authStage" name="stage">
-              <option value="">اختر المرحلة</option>
-              <option value="prep">المرحلة الإعدادية</option>
-              <option value="secondary">المرحلة الثانوية</option>
-              <option value="baccalaureate">البكالوريا</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="authGrade">الصف الدراسي</label>
-            <select id="authGrade" name="grade">
-              <option value="">اختر الصف</option>
-              <option value="first-prep">الأول الإعدادي</option>
-              <option value="second-prep">الثاني الإعدادي</option>
-              <option value="third-prep">الثالث الإعدادي</option>
-              <option value="first-secondary">الأول الثانوي</option>
-              <option value="second-secondary">الثاني الثانوي</option>
-              <option value="third-secondary">الثالث الثانوي</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="authTrack">الشعبة الدراسية</label>
-            <select id="authTrack" name="track">
-              <option value="">لم يتم التحديد</option>
-              <option value="science">علمي علوم</option>
-              <option value="math">علمي رياضة</option>
-              <option value="literary">أدبي</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="teacherFields" class="hidden">
-          <div class="form-group">
-            <label for="authSpecialty">التخصص</label>
-            <input id="authSpecialty" name="specialty" type="text" placeholder="مثال: مدرس فيزياء">
-          </div>
-
-          <div class="form-group">
-            <label for="authPhone">رقم الهاتف</label>
-            <input id="authPhone" name="phone" type="tel" autocomplete="tel" placeholder="رقم الهاتف">
-          </div>
-        </div>
-      </div>
-
-      <div id="authError" class="form-error hidden" role="alert"></div>
-
-      <button id="authSubmit" class="button button-primary button-full" type="submit">
-        تسجيل الدخول
-      </button>
-    </form>
-
-    <button id="forgotPasswordButton" class="forgot-password" data-action="forgot-password">
-      نسيت كلمة المرور؟
-    </button>
-
-    <div class="auth-security-note">
-      <span class="security-dot"></span>
-      <span>احرص على حماية بيانات حسابك وكلمة المرور.</span>
-    </div>
-
-    <p class="auth-legal">
-      باستخدامك المنصة، فإنك توافق على
-      <button data-action="show-terms">شروط الاستخدام</button>
-      و<button data-action="show-privacy">سياسة الخصوصية</button>.
-    </p>
-  </div>
-</div>
-
-  </section>  <div id="mainApp" class="main-app hidden">
-    <aside id="sidebar" class="sidebar">
-      <div class="sidebar-brand">
-        <a href="#" class="brand" data-action="navigate" data-page="overview">
-          <img src="assets/logo.svg" alt="المستقبلي">
-          <span>
-            <strong>المستقبلي</strong>
-            <small>MOSTAQBALI</small>
-          </span>
-        </a>
-        <button class="icon-button sidebar-close" data-action="close-sidebar" aria-label="إغلاق القائمة">×</button>
-      </div>  <div class="sidebar-user">
-    <div id="sidebarAvatar" class="avatar avatar-large">م</div>
-    <div class="sidebar-user-info">
-      <strong id="sidebarUserName">مستخدم المستقبلي</strong>
-      <span id="sidebarUserRole">طالب</span>
-    </div>
-    <span class="online-indicator"></span>
-  </div>
-
-  <div class="sidebar-section-label">القائمة الرئيسية</div>
-  <nav id="mainNavigation" class="sidebar-navigation">
-    <button class="nav-item active" data-action="navigate" data-page="overview">
-      <span class="nav-icon">⌂</span><span>الرئيسية</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="subjects" data-roles="student">
-      <span class="nav-icon">▦</span><span>المواد الدراسية</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="courses">
-      <span class="nav-icon">▤</span><span>الكورسات والدروس</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="exams" data-roles="student,teacher,admin">
-      <span class="nav-icon">✓</span><span>الامتحانات</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="teachers" data-roles="student,parent,admin">
-      <span class="nav-icon">♙</span><span>المدرسون</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="groups" data-roles="student,teacher,admin">
-      <span class="nav-icon">▧</span><span>المجموعات التعليمية</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="progress" data-roles="student,parent,admin">
-      <span class="nav-icon">↗</span><span>مستواي الدراسي</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="students" data-roles="teacher,admin">
-      <span class="nav-icon">♧</span><span>الطلاب</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="parents" data-roles="parent,admin">
-      <span class="nav-icon">♧</span><span>متابعة الأبناء</span>
-    </button>
-  </nav>
-
-  <div class="sidebar-section-label">الحساب والخدمات</div>
-  <nav class="sidebar-navigation">
-    <button class="nav-item" data-action="navigate" data-page="subscriptions">
-      <span class="nav-icon">◇</span><span>الاشتراكات</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="notifications">
-      <span class="nav-icon">♧</span><span>الإشعارات</span>
-      <span id="notificationBadge" class="nav-badge hidden">0</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="support">
-      <span class="nav-icon">?</span><span>خدمة العملاء</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="profile">
-      <span class="nav-icon">♙</span><span>الملف الشخصي</span>
-    </button>
-    <button class="nav-item" data-action="navigate" data-page="settings">
-      <span class="nav-icon">⚙</span><span>الإعدادات</span>
-    </button>
-    <button class="nav-item admin-only hidden" data-action="navigate" data-page="admin" data-roles="admin">
-      <span class="nav-icon">▣</span><span>إدارة المنصة</span>
-    </button>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <div class="help-card">
-      <div class="help-card-icon">?</div>
-      <strong>هل تحتاج إلى مساعدة؟</strong>
-      <p>فريق الدعم جاهز لمساعدتك.</p>
-      <button data-action="navigate" data-page="support">تواصل مع الدعم ←</button>
-    </div>
-
-    <button class="logout-button" data-action="logout">
-      <span>↪</span> تسجيل الخروج
-    </button>
-  </div>
-</aside>
-
-<div id="sidebarOverlay" class="sidebar-overlay" data-action="close-sidebar"></div>
-
-<main class="app-content">
-  <header class="topbar">
-    <div class="topbar-start">
-      <button class="icon-button menu-toggle" data-action="toggle-sidebar" aria-label="فتح القائمة">☰</button>
-      <div class="breadcrumb">
-        <span>المستقبلي</span><span class="breadcrumb-divider">/</span>
-        <strong id="breadcrumbCurrent">الرئيسية</strong>
-      </div>
-    </div>
-
-    <div class="topbar-actions">
-      <label class="global-search">
-        <span>⌕</span>
-        <input id="globalSearch" type="search" placeholder="ابحث عن مادة أو مدرس..." autocomplete="off">
-        <kbd>بحث</kbd>
-      </label>
-
-      <button class="icon-button notification-button" data-action="navigate" data-page="notifications" aria-label="الإشعارات">
-        ♧<span id="topNotificationDot" class="notification-dot hidden"></span>
-      </button>
-
-      <button class="topbar-profile" data-action="navigate" data-page="profile">
-        <span id="topbarAvatar" class="avatar">م</span>
-        <span class="topbar-profile-name">
-          <strong id="topbarUserName">مستخدم المستقبلي</strong>
-          <small id="topbarUserRole">طالب</small>
-        </span>
-        <span class="profile-chevron">⌄</span>
-      </button>
-    </div>
-  </header>
-
-  <div id="pageContainer" class="page-container">
-    <section class="welcome-banner">
-      <div class="welcome-copy">
-        <span class="welcome-tag"><span></span> رحلتك التعليمية تبدأ الآن</span>
-        <h1>أهلاً بك، <span id="welcomeName">بطل المستقبل</span></h1>
-        <p id="welcomeDescription">نظّم وقتك، تابع دروسك، واجعل كل يوم خطوة جديدة نحو هدفك.</p>
-        <div class="welcome-actions">
-          <button class="button button-white" data-action="navigate" data-page="courses">استكشف الدروس <span>←</span></button>
-          <button class="button button-outline-light" data-action="navigate" data-page="progress">تابع تقدمك</button>
-        </div>
-      </div>
-      <div class="welcome-art" aria-hidden="true">
-        <div class="art-orbit art-orbit-one"></div>
-        <div class="art-orbit art-orbit-two"></div>
-        <div class="art-book">
-          <div class="book-page"></div>
-          <div class="book-page"></div>
-          <div class="book-spine"></div>
-        </div>
-        <div class="art-star art-star-one">✦</div>
-        <div class="art-star art-star-two">✧</div>
-        <div class="art-floating-card">
-          <span>هدفك يستحق</span>
-          <strong>كل يوم مجهود</strong>
-        </div>
-      </div>
-      <div class="banner-glow"></div>
     </section>
 
-    <div id="roleNotice" class="role-notice hidden"></div>
-
-    <section id="dashboardStats" class="stats-grid">
-      <article class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon stat-blue">▤</span>
-          <span class="stat-trend">التعلم</span>
-        </div>
-        <strong id="statCourses">0</strong>
-        <span class="stat-label">الكورسات المتاحة لحسابك</span>
-        <div class="stat-bottom-line"><span style="width:70%"></span></div>
+    <section class="features" id="features">
+      <article class="feature">
+        <h3>🎓 تعلم في مكان واحد</h3>
+        <p>تابع موادك ودروسك التعليمية من واجهة منظمة.</p>
       </article>
 
-      <article class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon stat-purple">✓</span>
-          <span class="stat-trend">التقييم</span>
-        </div>
-        <strong id="statExams">0</strong>
-        <span class="stat-label">الامتحانات المتاحة</span>
-        <div class="stat-bottom-line purple-line"><span style="width:55%"></span></div>
+      <article class="feature">
+        <h3>📝 اختبر مستواك</h3>
+        <p>استعد للامتحانات وتابع نتائجك وتقدمك.</p>
       </article>
 
-      <article class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon stat-green">↗</span>
-          <span class="stat-trend">التقدم</span>
-        </div>
-        <strong id="statProgress">0%</strong>
-        <span class="stat-label">نسبة تقدمك المسجلة</span>
-        <div class="stat-bottom-line green-line"><span id="progressLine" style="width:0%"></span></div>
-      </article>
-
-      <article class="stat-card">
-        <div class="stat-top">
-          <span class="stat-icon stat-orange">♧</span>
-          <span class="stat-trend">المجتمع</span>
-        </div>
-        <strong id="statGroups">0</strong>
-        <span class="stat-label">المجموعات التعليمية</span>
-        <div class="stat-bottom-line orange-line"><span style="width:35%"></span></div>
+      <article class="feature">
+        <h3>🚀 خطط لمستقبلك</h3>
+        <p>نظّم رحلتك التعليمية خطوة بخطوة.</p>
       </article>
     </section>
 
-    <section class="content-section">
-      <div class="section-heading">
-        <div>
-          <span class="section-kicker">اكتشف وتعلم</span>
-          <h2>المواد الدراسية</h2>
-          <p>اختر المادة التي تريد التركيز عليها.</p>
-        </div>
-        <button class="text-link" data-action="navigate" data-page="subjects">عرض جميع المواد ←</button>
-      </div>
+    <footer>المستقبلي MOSTAQBALI — مستقبلك يبدأ من هنا.</footer>
+  </main>
 
-      <div id="subjectsGrid" class="subjects-grid"></div>
-    </section>
+  <script>
+    (() => {
+      const splash = document.getElementById("splash");
+      const home = document.getElementById("home");
 
-    <section class="dashboard-lower-grid">
-      <div class="panel upcoming-panel">
-        <div class="panel-heading">
-          <div>
-            <h2>الجدول التعليمي</h2>
-            <p>المحتوى المتاح في المنصة</p>
-          </div>
-          <span class="panel-heading-icon">▦</span>
-        </div>
-        <div id="upcomingList" class="upcoming-list"></div>
-      </div>
+      function openHome() {
+        splash.style.opacity = "0";
 
-      <div class="panel quick-panel">
-        <div class="panel-heading">
-          <div>
-            <h2>الوصول السريع</h2>
-            <p>كل ما تحتاجه في مكان واحد</p>
-          </div>
-          <span class="panel-heading-icon">✦</span>
-        </div>
+        setTimeout(() => {
+          splash.style.display = "none";
+          home.style.display = "block";
+          document.body.style.background = "#f5f7ff";
+        }, 250);
+      }
 
-        <div class="quick-actions">
-          <button class="quick-action" data-action="navigate" data-page="courses">
-            <span class="quick-action-icon quick-blue">▤</span>
-            <span><strong>الكورسات</strong><small>تصفح المحتوى التعليمي</small></span>
-            <b>←</b>
-          </button>
-          <button class="quick-action" data-action="navigate" data-page="exams">
-            <span class="quick-action-icon quick-purple">✓</span>
-            <span><strong>الامتحانات</strong><small>اختبر مستواك الدراسي</small></span>
-            <b>←</b>
-          </button>
-          <button class="quick-action" data-action="navigate" data-page="subscriptions">
-            <span class="quick-action-icon quick-green">◇</span>
-            <span><strong>الاشتراكات</strong><small>تابع خطط الاشتراك</small></span>
-            <b>←</b>
-          </button>
-          <button class="quick-action" data-action="navigate" data-page="support">
-            <span class="quick-action-icon quick-orange">?</span>
-            <span><strong>خدمة العملاء</strong><small>أرسل طلبًا إلى فريق الدعم</small></span>
-            <b>←</b>
-          </button>
-        </div>
-      </div>
-    </section>
+      // الانتقال تلقائيًا بعد ثانية واحدة.
+      window.setTimeout(openHome, 1000);
 
-    <section class="content-section">
-      <div class="section-heading">
-        <div>
-          <span class="section-kicker">تعلم مع الأفضل</span>
-          <h2>المدرسون</h2>
-          <p>تعرّف على المدرسين المعتمدين في المنصة.</p>
-        </div>
-        <button class="text-link" data-action="navigate" data-page="teachers">اكتشف المدرسين ←</button>
-      </div>
-      <div id="teachersGrid" class="teachers-grid"></div>
-    </section>
+      document.getElementById("exploreBtn").addEventListener("click", () => {
+        document.getElementById("features").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      });
 
-    <footer class="app-footer">
-      <div class="footer-brand">
-        <img src="assets/logo.svg" alt="">
-        <strong>المستقبلي</strong>
-      </div>
-      <span>مستقبلك يبدأ من هنا.</span>
-      <div class="footer-links">
-        <button data-action="show-terms">شروط الاستخدام</button>
-        <button data-action="show-privacy">الخصوصية</button>
-        <button data-action="navigate" data-page="support">الدعم الفني</button>
-      </div>
-      <span>© <span id="currentYear"></span> MOSTAQBALI</span>
-    </footer>
-  </div>
-</main>
+      function showNotice() {
+        alert("واجهة البداية جاهزة. الخطوة التالية هي ربط تسجيل الدخول والحسابات بقاعدة بيانات آمنة.");
+      }
 
-  </div>  <div id="modalRoot" class="modal-root hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-backdrop" data-action="close-modal"></div>
-    <div class="modal-card">
-      <button class="modal-close icon-button" data-action="close-modal" aria-label="إغلاق">×</button>
-      <div id="modalContent"></div>
-    </div>
-  </div>  <script src="config.js"></script>  <script src="app.js"></script></body>
-                                               </html>
+      document.getElementById("loginBtn").addEventListener("click", showNotice);
+      document.getElementById("startBtn").addEventListener("click", showNotice);
+    })();
+  </script>
+
+</body>
+</html>
