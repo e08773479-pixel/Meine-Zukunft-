@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101B3D">
+  <meta name="description" content="المستقبلي — منصتك التعليمية لتنظيم الدراسة والوصول إلى الدروس والكورسات.">
+  <title>الرئيسية | المستقبلي MOSTAQBALI</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+      --navy: #101B3D;
+      --navy-light: #192952;
+      --blue: #2864F0;
+      --blue-soft: #EAF0FF;
+      --purple: #7957E8;
+      --purple-soft: #F0EBFF;
+      --green: #159B67;
+      --orange: #E99A24;
+      --red: #D9485F;
+      --background: #F4F7FC;
+      --white: #FFFFFF;
+      --text: #172443;
+      --muted: #7B879F;
+      --border: #E7ECF5;
+      --sidebar-width: 258px;
+      --radius: 18px;
+      --shadow: 0 8px 30px rgba(20, 38, 78, .055);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--background);
+      color: var(--text);
+      font-family: "Cairo", Tahoma, Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(40, 100, 240, .22);
+      outline-offset: 2px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 30;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 25px 16px 18px;
+      overflow-y: auto;
+      transition: transform .25s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 9px 27px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .brand-mark {
+      width: 45px;
+      height: 45px;
+      flex: 0 0 45px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #3979FF, #7957E8);
+      box-shadow: 0 8px 22px rgba(40,100,240,.28);
+    }
+
+    .brand-mark svg {
+      width: 27px;
+      height: 27px;
+    }
+
+    .brand-name {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -.5px;
+    }
+
+    .brand-caption {
+      color: #AEBBE0;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      direction: ltr;
+      text-align: right;
+    }
+
+    .side-label {
+      color: #8292BB;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 23px 12px 10px;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 5px;
+    }
+
+    .nav-item {
+      border: 0;
+      background: transparent;
+      color: #B9C4DF;
+      border-radius: 12px;
+      padding: 11px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: right;
+      width: 100%;
+      transition: .2s;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,.07);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(100deg, #2864F0, #4D75F5);
+      color: white;
+      box-shadow: 0 6px 17px rgba(40,100,240,.23);
+    }
+
+    .nav-icon {
+      width: 23px;
+      flex: 0 0 23px;
+      text-align: center;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .nav-text {
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .nav-badge {
+      margin-right: auto;
+      border-radius: 7px;
+      background: #7957E8;
+      padding: 2px 7px;
+      font-size: 9px;
+      color: white;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .help-card {
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 15px;
+      padding: 14px;
+      background: rgba(255,255,255,.045);
+    }
+
+    .help-card strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .help-card p {
+      color: #AAB8D8;
+      font-size: 10px;
+      line-height: 1.9;
+      margin-bottom: 12px;
+    }
+
+    .help-card button {
+      width: 100%;
+      border: 0;
+      border-radius: 9px;
+      background: rgba(255,255,255,.12);
+      color: white;
+      padding: 9px;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .main {
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 82px;
+      padding: 0 30px;
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+    }
+
+    .mobile-menu {
+      display: none;
+      border: 0;
+      background: var(--blue-soft);
+      color: var(--blue);
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      font-size: 21px;
+    }
+
+    .page-heading {
+      min-width: 170px;
+    }
+
+    .page-heading h1 {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.7;
+    }
+
+    .page-heading p {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .top-search {
+      position: relative;
+      max-width: 390px;
+      flex: 1;
+      margin: 0 auto;
+    }
+
+    .top-search input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #F8FAFE;
+      padding: 12px 42px 12px 14px;
+      outline: none;
+      font-size: 12px;
+      transition: .2s;
+    }
+
+    .top-search input:focus {
+      border-color: #9CB8FF;
+      background: white;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8190AB;
+      font-size: 17px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .icon-button {
+      width: 39px;
+      height: 39px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      color: var(--navy);
+      position: relative;
+      font-size: 17px;
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 7px;
+      height: 7px;
+      background: var(--red);
+      border: 1px solid white;
+      border-radius: 50%;
+    }
+
+    .profile-button {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: transparent;
+      border: 0;
+      text-align: right;
+    }
+
+    .avatar {
+      width: 39px;
+      height: 39px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #DCE7FF, #EEE6FF);
+      color: #3457B8;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 900;
+      overflow: hidden;
+      flex: 0 0 39px;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-meta strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .profile-meta small {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      margin-top: 2px;
+    }
+
+    .content {
+      padding: 27px 30px 35px;
+      max-width: 1600px;
+      margin: auto;
+    }
+
+    .demo-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      background: #FFF9E9;
+      border: 1px solid #F6E7B5;
+      color: #805D12;
+      border-radius: 13px;
+      padding: 12px 15px;
+      margin-bottom: 22px;
+      font-size: 11px;
+      line-height: 1.9;
+    }
+
+    .demo-notice strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .welcome-banner {
+      position: relative;
+      overflow: hidden;
+      min-height: 205px;
+      padding: 30px 32px;
+      border-radius: 22px;
+      background: linear-gradient(112deg, #14224A 0%, #2449A2 57%, #7058D9 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 15px 35px rgba(30,65,145,.14);
+    }
+
+    .welcome-banner::before,
+    .welcome-banner::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .welcome-banner::before {
+      width: 320px;
+      height: 320px;
+      left: 4%;
+      top: -180px;
+    }
+
+    .welcome-banner::after {
+      width: 220px;
+      height: 220px;
+      left: 10%;
+      bottom: -160px;
+    }
+
+    .welcome-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 610px;
+    }
+
+    .welcome-eyebrow {
+      color: #D0DCFF;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    .welcome-copy h2 {
+      font-size: clamp(22px, 2.5vw, 31px);
+      font-weight: 900;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .welcome-copy p {
+      max-width: 470px;
+      color: #E1E8FF;
+      line-height: 2;
+      font-size: 12px;
+    }
+
+    .welcome-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 17px;
+      font-weight: 800;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-white {
+      background: white;
+      color: #25479A;
+    }
+
+    .btn-glass {
+      border: 1px solid rgba(255,255,255,.27);
+      background: rgba(255,255,255,.1);
+      color: white;
+    }
+
+    .banner-illustration {
+      position: relative;
+      z-index: 1;
+      width: 170px;
+      height: 145px;
+      flex: 0 0 170px;
+      display: grid;
+      place-items: center;
+    }
+
+    .book-art {
+      width: 108px;
+      height: 91px;
+      position: relative;
+      transform: rotate(-8deg);
+      filter: drop-shadow(0 15px 13px rgba(0,0,0,.2));
+    }
+
+    .book-left,
+    .book-right {
+      position: absolute;
+      width: 54px;
+      height: 80px;
+      top: 5px;
+      background: linear-gradient(140deg, #FFFFFF, #DAE4FF);
+      border-radius: 8px 3px 3px 8px;
+      border: 1px solid #C7D4F8;
+    }
+
+    .book-left {
+      right: 53px;
+      transform: skewY(-9deg);
+    }
+
+    .book-right {
+      left: 1px;
+      border-radius: 3px 8px 8px 3px;
+      transform: skewY(9deg);
+      background: linear-gradient(220deg, #C7D6FF, #FFFFFF);
+    }
+
+    .book-left::after,
+    .book-right::after {
+      content: "";
+      position: absolute;
+      height: 3px;
+      border-radius: 4px;
+      background: #89A7F8;
+      top: 25px;
+      right: 10px;
+      width: 30px;
+      box-shadow: 0 10px 0 #B0C2F8, 0 20px 0 #B0C2F8;
+    }
+
+    .floating-star {
+      position: absolute;
+      font-size: 22px;
+      color: #FFE7A1;
+    }
+
+    .star-one {
+      top: 4px;
+      right: 16px;
+    }
+
+    .star-two {
+      bottom: 12px;
+      left: 3px;
+      font-size: 15px;
+      color: #B7C8FF;
+    }
+
+    .section {
+      margin-top: 27px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 15px;
+    }
+
+    .section-heading h2 {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .section-heading p {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .text-button {
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 17px;
+      min-width: 0;
+      box-shadow: 0 4px 17px rgba(20,38,78,.025);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .stat-icon {
+      width: 41px;
+      height: 41px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      font-size: 19px;
+    }
+
+    .stat-icon.blue { background: #EAF0FF; color: #2864F0; }
+    .stat-icon.purple { background: #F0EBFF; color: #7957E8; }
+    .stat-icon.green { background: #E5F7EF; color: #159B67; }
+    .stat-icon.orange { background: #FFF3DF; color: #D98A16; }
+
+    .stat-tag {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .stat-value {
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-title {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .stat-foot {
+      border-top: 1px solid #F0F2F8;
+      margin-top: 13px;
+      padding-top: 11px;
+      font-size: 9px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, .9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 19px;
+      min-width: 0;
+      box-shadow: 0 4px 17px rgba(20,38,78,.025);
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .panel-heading h3 {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .panel-heading p {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .empty-state {
+      padding: 27px 15px;
+      text-align: center;
+      border: 1px dashed #D8E1F1;
+      border-radius: 13px;
+      background: #FBFCFF;
+    }
+
+    .empty-icon {
+      width: 49px;
+      height: 49px;
+      margin: 0 auto 11px;
+      border-radius: 15px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .empty-state h4 {
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.9;
+      max-width: 310px;
+      margin: 0 auto 14px;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 5px 13px rgba(40,100,240,.16);
+    }
+
+    .btn-light {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .schedule-list {
+      display: grid;
+      gap: 11px;
+    }
+
+    .schedule-item {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      padding: 12px;
+      border-radius: 12px;
+      background: #F9FAFE;
+      border: 1px solid #F0F2F8;
+    }
+
+    .schedule-time {
+      min-width: 54px;
+      text-align: center;
+      padding: 7px 4px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--blue);
+    }
+
+    .schedule-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .schedule-info strong {
+      display: block;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .schedule-info small {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.8;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 7px;
+      background: #FFF3DF;
+      color: #A56A0D;
+      font-size: 9px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .subject-card {
+      text-align: right;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 16px;
+      min-width: 0;
+      transition: .2s;
+    }
+
+    .subject-card:hover {
+      border-color: #C5D5FF;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .subject-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      font-size: 19px;
+      margin-bottom: 13px;
+    }
+
+    .subject-card h3 {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .subject-card p {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.8;
+    }
+
+    .subject-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 11px;
+      border-top: 1px solid #F0F2F8;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .teacher-search-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 20px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      gap: 11px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #52617F;
+    }
+
+    .field select,
+    .field input {
+      min-width: 0;
+      width: 100%;
+      background: #FAFBFE;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+      outline: none;
+      color: var(--text);
+      font-size: 11px;
+    }
+
+    .filter-button {
+      align-self: end;
+      min-height: 40px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature-card {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .feature-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-size: 20px;
+      margin-bottom: 13px;
+    }
+
+    .feature-card h3 {
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 2;
+      min-height: 40px;
+      margin-bottom: 14px;
+    }
+
+    .feature-card button {
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .teacher-application {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-radius: 17px;
+      padding: 21px 23px;
+      color: white;
+      background: linear-gradient(105deg, #253C83, #7054D5);
+    }
+
+    .teacher-application h3 {
+      font-size: 15px;
+      margin-bottom: 7px;
+    }
+
+    .teacher-application p {
+      color: #E4E7FF;
+      font-size: 10px;
+      line-height: 2;
+      max-width: 540px;
+    }
+
+    .teacher-application .btn {
+      flex: 0 0 auto;
+      background: white;
+      color: #354CA1;
+    }
+
+    .page-view {
+      animation: appear .25s ease;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .view-title {
+      margin-bottom: 20px;
+    }
+
+    .view-title h2 {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .view-title p {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .results-line {
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #8A96AC;
+      font-size: 10px;
+      padding: 27px 0 5px;
+      line-height: 2;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,17,41,.55);
+      z-index: 25;
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 22px;
+      z-index: 100;
+      max-width: min(390px, calc(100vw - 32px));
+      padding: 13px 17px;
+      border-radius: 12px;
+      color: white;
+      background: var(--navy);
+      box-shadow: 0 12px 35px rgba(0,0,0,.18);
+      font-size: 11px;
+      line-height: 1.9;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .search-empty {
+      margin-top: 12px;
+    }
+
+    @media (max-width: 1250px) {
+      .content { padding-right: 22px; padding-left: 22px; }
+      .topbar { padding: 0 22px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .subjects-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .banner-illustration { width: 125px; flex-basis: 125px; }
+    }
+
+    @media (max-width: 950px) {
+      :root { --sidebar-width: 250px; }
+
+      .sidebar {
+        transform: translateX(-105%);
+        box-shadow: none;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 10px 0 35px rgba(0,0,0,.15);
+      }
+
+      .overlay.visible {
+        display: block;
+      }
+
+      .main { margin-left: 0; }
+      .mobile-menu { display: block; }
+      .topbar { gap: 12px; }
+      .page-heading { min-width: 125px; }
+      .page-heading h1 { font-size: 15px; }
+      .profile-meta { display: none; }
+      .two-column { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        height: 69px;
+        padding: 0 13px;
+        gap: 9px;
+      }
+
+      .page-heading { min-width: 0; }
+      .page-heading p { display: none; }
+      .page-heading h1 { font-size: 13px; white-space: nowrap; }
+
+      .top-search { max-width: none; }
+      .top-search input {
+        padding: 10px 34px 10px 8px;
+        font-size: 10px;
+      }
+
+      .search-icon { right: 10px; font-size: 14px; }
+      .top-actions { gap: 6px; }
+      .icon-button { width: 34px; height: 34px; font-size: 15px; }
+      .profile-button { display: none; }
+      .mobile-menu { width: 34px; height: 34px; flex: 0 0 34px; }
+
+      .content { padding: 16px 13px 25px; }
+      .demo-notice { padding: 10px; font-size: 10px; margin-bottom: 15px; }
+
+      .welcome-banner {
+        min-height: auto;
+        padding: 23px 19px;
+        border-radius: 17px;
+      }
+
+      .welcome-copy h2 { font-size: 21px; }
+      .welcome-copy p { font-size: 11px; }
+      .banner-illustration { display: none; }
+
+      .welcome-actions { margin-top: 15px; }
+      .btn { padding: 10px 12px; font-size: 10px; }
+
+      .section { margin-top: 22px; }
+      .section-heading h2 { font-size: 14px; }
+      .stats-grid { gap: 9px; }
+      .stat-card { padding: 12px; border-radius: 13px; }
+      .stat-icon { width: 34px; height: 34px; font-size: 16px; }
+      .stat-value { font-size: 20px; }
+      .stat-title { font-size: 9px; }
+      .stat-foot { font-size: 8px; }
+
+      .subjects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .subject-card { padding: 13px; }
+      .subject-icon { width: 37px; height: 37px; margin-bottom: 10px; }
+      .panel { padding: 13px; }
+
+      .filter-row { grid-template-columns: 1fr 1fr; }
+      .filter-button { grid-column: 1 / -1; }
+
+      .feature-grid { grid-template-columns: 1fr; }
+      .feature-card { padding: 15px; }
+      .feature-card p { min-height: 0; }
+
+      .teacher-application {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 18px;
+      }
+
+      .teacher-application h3 { font-size: 13px; }
+      .view-title h2 { font-size: 19px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="القائمة الرئيسية">
+    <a href="home.html" class="brand" aria-label="المستقبلي - الرئيسية">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M4 9.5C8.2 7 12.2 7.4 16 10V25C12.2 22.4 8.2 22 4 24.5V9.5Z"
+                stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M28 9.5C23.8 7 19.8 7.4 16 10V25C19.8 22.4 23.8 22 28 24.5V9.5Z"
+                stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M16 10V25" stroke="white" stroke-width="2"/>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">المستقبلي</span>
+        <span class="brand-caption">MOSTAQBALI</span>
+      </span>
+    </a>
+
+    <div class="side-label">القائمة الرئيسية</div>
+    <nav class="nav-list" id="mainNav">
+      <button class="nav-item active" data-view="overview">
+        <span class="nav-icon">⌂</span><span class="nav-text">الرئيسية</span>
+      </button>
+      <button class="nav-item" data-view="courses">
+        <span class="nav-icon">▤</span><span class="nav-text">الكورسات والدروس</span>
+      </button>
+      <button class="nav-item" data-view="teachers">
+        <span class="nav-icon">♙</span><span class="nav-text">المدرسون</span>
+      </button>
+      <button class="nav-item" data-view="exams">
+        <span class="nav-icon">☷</span><span class="nav-text">الامتحانات</span>
+      </button>
+      <button class="nav-item" data-view="results">
+        <span class="nav-icon">▥</span><span class="nav-text">النتائج والتقدم</span>
+      </button>
+    </nav>
+
+    <div class="side-label">حسابك والمنصة</div>
+    <nav class="nav-list">
+      <button class="nav-item" data-view="parent">
+        <span class="nav-icon">♧</span><span class="nav-text">متابعة ولي الأمر</span>
+      </button>
+      <button class="nav-item" data-view="subscriptions">
+        <span class="nav-icon">◇</span><span class="nav-text">الاشتراكات والدفع</span>
+      </button>
+      <button class="nav-item" data-view="teacher-apply">
+        <span class="nav-icon">✎</span><span class="nav-text">التقديم كمدرس</span>
+        <span class="nav-badge">جديد</span>
+      </button>
+      <button class="nav-item" data-view="notifications">
+        <span class="nav-icon">♧</span><span class="nav-text">الإشعارات</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <span class="nav-icon">⚙</span><span class="nav-text">الإعدادات</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <strong>محتاج مساعدة؟</strong>
+        <p>تقدر تتعرف على طرق استخدام المنصة، أو تتواصل مع فريق الدعم بعد تفعيل الخدمة.</p>
+        <button type="button" data-action="support">مركز المساعدة ←</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenu" type="button" aria-label="فتح القائمة" aria-expanded="false">☰</button>
+
+      <div class="page-heading">
+        <h1 id="topTitle">الرئيسية</h1>
+        <p id="topSubtitle">مساحتك التعليمية في مكان واحد</p>
+      </div>
+
+      <form class="top-search" id="globalSearchForm" role="search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="globalSearch" type="search" placeholder="ابحث عن مادة أو مدرس أو كورس..." aria-label="البحث في المنصة">
+      </form>
+
+      <div class="top-actions">
+        <button class="icon-button" type="button" data-view="notifications" aria-label="الإشعارات">
+          ♧<span class="notification-dot"></span>
+        </button>
+        <button class="profile-button" type="button" data-view="settings" aria-label="إعدادات الحساب">
+          <span class="avatar" id="profileAvatar">م</span>
+          <span class="profile-meta">
+            <strong id="profileName">زائر المنصة</strong>
+            <small id="profileRole">استكشف المنصة</small>
+          </span>
+          <span aria-hidden="true">⌄</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="demo-notice" role="status">
+        <span aria-hidden="true">ⓘ</span>
+        <div>
+          <strong>نسخة الواجهة قيد التجهيز</strong>
+          الصفحة الحالية نموذج أمامي؛ لا يوجد تسجيل دخول أو قاعدة بيانات متصلة حتى الآن. لن تظهر فيها نتائج أو اشتراكات حقيقية قبل ربط الخدمات الفعلية.
+        </div>
+      </div>
+
+      <section class="page-view" id="view-overview">
+        <section class="welcome-banner">
+          <div class="welcome-copy">
+            <div class="welcome-eyebrow">أهلاً بيك في المستقبلي</div>
+            <h2>مستقبلك يبدأ بخطوة<br>والخطوة تبدأ من هنا.</h2>
+            <p>اكتشف الدروس، ونظّم رحلتك التعليمية، واستعد لخطوتك القادمة بثقة. كل أدواتك التعليمية في مكان واحد.</p>
+            <div class="welcome-actions">
+              <button class="btn btn-white" type="button" data-view="courses">استكشف الكورسات <span>←</span></button>
+              <button class="btn btn-glass" type="button" data-view="teachers">اكتشف المدرسين</button>
+            </div>
+          </div>
+          <div class="banner-illustration" aria-hidden="true">
+            <span class="floating-star star-one">✦</span>
+            <span class="floating-star star-two">✧</span>
+            <div class="book-art">
+              <div class="book-left"></div>
+              <div class="book-right"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-heading">
+            <div>
+              <h2>ملخص رحلتك التعليمية</h2>
+              <p>الأرقام الفعلية هتظهر بعد تسجيل الدخول وربط بياناتك.</p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon blue">▤</span>
+                <span class="stat-tag">ملخص الطالب</span>
+              </div>
+              <div class="stat-value">—</div>
+              <div class="stat-title">الكورسات المشترك فيها</div>
+              <div class="stat-foot">لا توجد بيانات حساب مرتبطة حتى الآن.</div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon purple">▷</span>
+                <span class="stat-tag">التعلّم</span>
+              </div>
+              <div class="stat-value">—</div>
+              <div class="stat-title">الدروس المكتملة</div>
+              <div class="stat-foot">سيتم احتساب التقدم من سجل الدروس الفعلي.</div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon green">✓</span>
+                <span class="stat-tag">التقييم</span>
+              </div>
+              <div class="stat-value">—</div>
+              <div class="stat-title">الامتحانات التي تم حلها</div>
+              <div class="stat-foot">نتائجك لن تظهر إلا بعد حفظ الامتحانات في النظام.</div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon orange">◷</span>
+                <span class="stat-tag">التنظيم</span>
+              </div>
+              <div class="stat-value">—</div>
+              <div class="stat-title">ساعات التعلّم</div>
+              <div class="stat-foot">لا يتم تسجيل وقت مشاهدة حقيقي في النسخة الحالية.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section two-column">
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>تابع تعلّمك</h3>
+                <p>الكورسات المسجّل فيها حسابك</p>
+              </div>
+              <button class="text-button" type="button" data-view="courses">عرض الكورسات ←</button>
+            </div>
+            <div class="empty-state">
+              <div class="empty-icon">▤</div>
+              <h4>لسه مفيش كورسات مرتبطة بحسابك</h4>
+              <p>بعد ربط قاعدة البيانات، هتظهر هنا الكورسات اللي اشتركت فيها وآخر درس وصلت له.</p>
+              <button class="btn btn-primary" type="button" data-view="courses">استكشف الكورسات</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>جدولك الدراسي</h3>
+                <p>مواعيد الدروس والامتحانات</p>
+              </div>
+              <button class="text-button" type="button" data-action="schedule">تنظيم الجدول</button>
+            </div>
+            <div class="empty-state">
+              <div class="empty-icon">◷</div>
+              <h4>جدولك لسه فاضي</h4>
+              <p>يمكنك لاحقًا إضافة مواعيد المذاكرة والدروس والامتحانات بعد تفعيل حسابك.</p>
+              <button class="btn btn-light" type="button" data-action="schedule">إعداد الجدول</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="section">
+          <div class="section-heading">
+            <div>
+              <h2>تصفّح المواد الدراسية</h2>
+              <p>اختار المادة لبدء البحث عن محتوى مناسب لمرحلتك.</p>
+            </div>
+            <button class="text-button" type="button" data-view="courses">كل المواد ←</button>
+          </div>
+
+          <div class="subjects-grid" id="overviewSubjects">
+            <button class="subject-card" type="button" data-subject="فيزياء">
+              <span class="subject-icon" style="background:#EAF0FF;color:#2864F0">∿</span>
+              <h3>الفيزياء</h3>
+              <p>دروس ومراجعات وأسئلة</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="كيمياء">
+              <span class="subject-icon" style="background:#E5F7EF;color:#159B67">⚗</span>
+              <h3>الكيمياء</h3>
+              <p>شرح وتدريبات ومراجعة</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="أحياء">
+              <span class="subject-icon" style="background:#EAF8E9;color:#4A9A45">❋</span>
+              <h3>الأحياء</h3>
+              <p>مفاهيم ورسومات وأسئلة</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="لغة عربية">
+              <span class="subject-icon" style="background:#FFF3DF;color:#D98A16">أ</span>
+              <h3>اللغة العربية</h3>
+              <p>نحو وأدب وبلاغة</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="لغة إنجليزية">
+              <span class="subject-icon" style="background:#F0EBFF;color:#7957E8">A</span>
+              <h3>اللغة الإنجليزية</h3>
+              <p>قواعد وقراءة وتدريبات</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="فرنساوي">
+              <span class="subject-icon" style="background:#FFECEF;color:#D9485F">F</span>
+              <h3>اللغة الفرنسية</h3>
+              <p>مفردات وقواعد ومراجعة</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="تربية دينية">
+              <span class="subject-icon" style="background:#E8F5F4;color:#268C88">◈</span>
+              <h3>التربية الدينية</h3>
+              <p>دروس ومراجعات</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+            <button class="subject-card" type="button" data-subject="مواطن">
+              <span class="subject-icon" style="background:#EDF1F8;color:#536789">⌖</span>
+              <h3>المواطنة</h3>
+              <p>مفاهيم ومحتوى دراسي</p>
+              <span class="subject-arrow">استكشف <span>←</span></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="section teacher-application">
+          <div>
+            <h3>أنت مدرس؟ انضم إلى المستقبلي</h3>
+            <p>قدّم طلبك، وحدد المواد والمراحل التي تدرّسها. سيتم تفعيل حساب التدريس بعد مراجعة الإدارة، عند توصيل النظام الخلفي.</p>
+          </div>
+          <button class="btn" type="button" data-view="teacher-apply">قدّم كمدرس <span>←</span></button>
+        </section>
+      </section>
+
+      <section class="page-view" id="view-courses" hidden>
+        <div class="view-title">
+          <h2>الكورسات والدروس</h2>
+          <p>ابحث عن محتوى تعليمي حسب المرحلة والصف والمادة. المحتوى الفعلي سيظهر بعد ربط قاعدة البيانات.</p>
+        </div>
+
+        <div class="teacher-search-box">
+          <div class="filter-row">
+            <div class="field">
+              <label for="courseStage">المرحلة التعليمية</label>
+              <select id="courseStage">
+                <option value="">كل المراحل</option>
+                <option value="primary">ابتدائي</option>
+                <option value="preparatory">إعدادي</option>
+                <option value="secondary">ثانوي</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="courseGrade">الصف الدراسي</label>
+              <select id="courseGrade">
+                <option value="">كل الصفوف</option>
+                <option>الصف الأول</option>
+                <option>الصف الثاني</option>
+                <option>الصف الثالث</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="courseSubject">المادة</label>
+              <select id="courseSubject">
+                <option value="">كل المواد</option>
+                <option>فيزياء</option>
+                <option>كيمياء</option>
+                <option>أحياء</option>
+                <option>لغة عربية</option>
+                <option>لغة إنجليزية</option>
+                <option>فرنساوي</option>
+                <option>تربية دينية</option>
+                <option>مواطن</option>
+              </select>
+            </div>
+            <button class="btn btn-primary filter-button" type="button" data-action="course-search">بحث <span>⌕</span></button>
+          </div>
+        </div>
+
+        <div class="section panel">
+          <div class="panel-heading">
+            <div>
+              <h3>الكورسات المتاحة</h3>
+              <p>لن نعرض كورسات تجريبية على أنها منشورة بالفعل.</p>
+            </div>
+          </div>
+          <div class="empty-state">
+            <div class="empty-icon">▤</div>
+            <h4>لا توجد كورسات متصلة حاليًا</h4>
+            <p>بعد إنشاء قاعدة البيانات واعتماد المدرسين ونشر الكورسات، هتظهر النتائج هنا حسب اختياراتك.</p>
+            <button class="btn btn-light" type="button" data-view="teachers">تعرّف على قسم المدرسين</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-teachers" hidden>
+        <div class="view-title">
+          <h2>المدرسون</h2>
+          <p>ابحث حسب المادة والمرحلة والمحافظة. لن تظهر ملفات مدرسين إلا بعد تسجيلهم واعتمادهم فعليًا.</p>
+        </div>
+
+        <div class="teacher-search-box">
+          <div class="filter-row">
+            <div class="field">
+              <label for="teacherSubject">المادة</label>
+              <select id="teacherSubject">
+                <option value="">كل المواد</option>
+                <option>فيزياء</option>
+                <option>كيمياء</option>
+                <option>أحياء</option>
+                <option>لغة عربية</option>
+                <option>لغة إنجليزية</option>
+                <option>فرنساوي</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="teacherStage">المرحلة</label>
+              <select id="teacherStage">
+                <option value="">كل المراحل</option>
+                <option value="primary">ابتدائي</option>
+                <option value="preparatory">إعدادي</option>
+                <option value="secondary">ثانوي</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="teacherGovernorate">المحافظة</label>
+              <select id="teacherGovernorate">
+                <option value="">كل المحافظات</option>
+                <option>القاهرة</option>
+                <option>الجيزة</option>
+                <option>الإسكندرية</option>
+                <option>القليوبية</option>
+                <option>المنوفية</option>
+                <option>الغربية</option>
+                <option>الدقهلية</option>
+                <option>الشرقية</option>
+                <option>البحيرة</option>
+                <option>كفر الشيخ</option>
+                <option>دمياط</option>
+                <option>بورسعيد</option>
+                <option>الإسماعيلية</option>
+                <option>السويس</option>
+                <option>الفيوم</option>
+                <option>بني سويف</option>
+                <option>المنيا</option>
+                <option>أسيوط</option>
+                <option>سوهاج</option>
+                <option>قنا</option>
+                <option>الأقصر</option>
+                <option>أسوان</option>
+                <option>البحر الأحمر</option>
+                <option>الوادي الجديد</option>
+                <option>مطروح</option>
+                <option>شمال سيناء</option>
+                <option>جنوب سيناء</option>
+              </select>
+            </div>
+            <button class="btn btn-primary filter-button" type="button" data-action="teacher-search">بحث <span>⌕</span></button>
+          </div>
+        </div>
+
+        <div class="section panel">
+          <div class="panel-heading">
+            <div>
+              <h3>نتائج البحث</h3>
+              <p>المدرسون المعتمدون فقط هيظهروا هنا عند توصيل النظام.</p>
+            </div>
+          </div>
+          <div class="empty-state">
+            <div class="empty-icon">♙</div>
+            <h4>لا توجد ملفات مدرسين متصلة حتى الآن</h4>
+            <p>النتائج مش متاحة في النسخة الحالية. تقدر تتصفح نموذج التقديم للمدرسين.</p>
+            <button class="btn btn-primary" type="button" data-view="teacher-apply">التقديم كمدرس</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-exams" hidden>
+        <div class="view-title">
+          <h2>الامتحانات والتدريبات</h2>
+          <p>مكان مخصص للامتحانات التي ينشرها المدرسون، مع أسئلة اختيار من متعدد وصور عند الحاجة.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon">☷</div>
+            <h3>امتحانات المواد</h3>
+            <p>امتحانات حسب المادة والصف والوحدة، بعد نشرها من مدرس معتمد.</p>
+            <button type="button" data-action="exam-search">استعراض الامتحانات ←</button>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon">◷</div>
+            <h3>الامتحانات المؤقتة</h3>
+            <p>إمكانية تحديد وقت للامتحان وحفظ الإجابات بطريقة منظمة.</p>
+            <button type="button" data-action="exam-search">عرض المتاح ←</button>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon">✓</div>
+            <h3>مراجعة الإجابات</h3>
+            <p>إظهار الدرجة والإجابات الصحيحة وفق إعدادات الامتحان.</p>
+            <button type="button" data-view="results">النتائج والتقدم ←</button>
+          </article>
+        </div>
+        <div class="section panel">
+          <div class="empty-state">
+            <div class="empty-icon">☷</div>
+            <h4>لا توجد امتحانات منشورة حاليًا</h4>
+            <p>لن يتم إنشاء درجات أو نتائج وهمية. ستظهر الامتحانات الفعلية بعد ربط النظام.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-results" hidden>
+        <div class="view-title">
+          <h2>النتائج والتقدم</h2>
+          <p>تابع درجات الامتحانات والدروس التي أكملتها بعد تسجيل الدخول وربط بيانات الطالب.</p>
+        </div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-icon blue">✓</div><div class="stat-value">—</div><div class="stat-title">إجمالي الامتحانات</div><div class="stat-foot">لا توجد بيانات مسجلة.</div></article>
+          <article class="stat-card"><div class="stat-icon green">٪</div><div class="stat-value">—</div><div class="stat-title">متوسط الدرجات</div><div class="stat-foot">سيتم حسابه من النتائج الفعلية.</div></article>
+          <article class="stat-card"><div class="stat-icon purple">▷</div><div class="stat-value">—</div><div class="stat-title">الدروس المكتملة</div><div class="stat-foot">لا يوجد سجل دراسي متصل.</div></article>
+          <article class="stat-card"><div class="stat-icon orange">◷</div><div class="stat-value">—</div><div class="stat-title">وقت التعلّم</div><div class="stat-foot">لم يتم تفعيل تتبع وقت الدراسة.</div></article>
+        </div>
+        <div class="section panel">
+          <div class="empty-state">
+            <div class="empty-icon">▥</div>
+            <h4>سجل النتائج فارغ</h4>
+            <p>عند حل امتحان متصل بالنظام، ستظهر نتيجتك وتاريخ الحل والتفاصيل المتاحة للمراجعة.</p>
+            <button class="btn btn-primary" type="button" data-view="exams">الانتقال للامتحانات</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-parent" hidden>
+        <div class="view-title">
+          <h2>متابعة ولي الأمر</h2>
+          <p>قسم مخصص لربط حساب ولي الأمر بحساب الطالب بصلاحيات واضحة.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><div class="feature-icon">♧</div><h3>ربط حساب الطالب</h3><p>ربط آمن يحتاج موافقة وتحققًا من العلاقة قبل عرض البيانات.</p><button type="button" data-action="parent-link">طلب ربط حساب ←</button></article>
+          <article class="feature-card"><div class="feature-icon">▥</div><h3>متابعة المستوى</h3><p>مشاهدة النتائج والتقدم الدراسي المتاح بعد موافقة الطالب والنظام.</p><button type="button" data-action="parent-progress">عرض التقدم ←</button></article>
+          <article class="feature-card"><div class="feature-icon">◇</div><h3>الاشتراكات</h3><p>عرض حالة اشتراكات الطالب وتواريخها بعد توصيل المدفوعات.</p><button type="button" data-view="subscriptions">الاشتراكات ←</button></article>
+        </div>
+        <div class="section panel">
+          <div class="empty-state">
+            <div class="empty-icon">♧</div>
+            <h4>لا يوجد طالب مرتبط بالحساب</h4>
+            <p>ربط ولي الأمر بالطالب يحتاج خدمة خلفية للتحقق من الطلب وحماية بيانات الطلاب.</p>
+            <button class="btn btn-primary" type="button" data-action="parent-link">طلب ربط حساب</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-subscriptions" hidden>
+        <div class="view-title">
+          <h2>الاشتراكات والدفع</h2>
+          <p>سيتم تفعيل الاشتراك بعد مراجعة إثبات الدفع من الإدارة، وليس بمجرد رفع صورة.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><div class="feature-icon">◇</div><h3>اشتراكات الكورسات</h3><p>عرض الاشتراكات المرتبطة بالحساب وتواريخ البداية والانتهاء.</p><button type="button" data-action="subscription-view">عرض اشتراكاتي ←</button></article>
+          <article class="feature-card"><div class="feature-icon">▧</div><h3>إثبات الدفع</h3><p>رفع إيصال الدفع ومراجعته من الإدارة عبر نظام آمن.</p><button type="button" data-action="payment-proof">تجربة رفع إثبات ←</button></article>
+          <article class="feature-card"><div class="feature-icon">✓</div><h3>حالة الطلب</h3><p>معرفة ما إذا كان إثبات الدفع قيد المراجعة أو مقبولًا أو مرفوضًا.</p><button type="button" data-action="payment-status">حالة الدفع ←</button></article>
+        </div>
+        <div class="section demo-notice">
+          <span aria-hidden="true">ⓘ</span>
+          <div><strong>الدفع غير مفعّل</strong> رقم محفظة فودافون كاش، ورفع الإثبات، واعتماد الاشتراك تحتاج إعدادات خادم ومراجعة إدارية. لا ترسل أي أموال اعتمادًا على هذه الواجهة التجريبية.</div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-teacher-apply" hidden>
+        <div class="view-title">
+          <h2>التقديم كمدرس</h2>
+          <p>املأ بيانات الطلب التجريبي. لا يتم إرسال الطلب أو اعتماده فعليًا قبل ربط الخادم.</p>
+        </div>
+        <div class="panel">
+          <form id="teacherApplicationForm">
+            <div class="filter-row">
+              <div class="field"><label for="appTeacherName">الاسم الكامل</label><input id="appTeacherName" name="name" required maxlength="100" placeholder="اكتب اسمك"></div>
+              <div class="field"><label for="appTeacherEmail">البريد الإلكتروني</label><input id="appTeacherEmail" name="email" type="email" required maxlength="160" placeholder="name@example.com"></div>
+              <div class="field"><label for="appTeacherPhone">رقم الهاتف</label><input id="appTeacherPhone" name="phone" type="tel" required maxlength="20" placeholder="01xxxxxxxxx"></div>
+              <div class="field"><label for="appTeacherSubject">المادة الأساسية</label><select id="appTeacherSubject" name="subject" required><option value="">اختر المادة</option><option>فيزياء</option><option>كيمياء</option><option>أحياء</option><option>لغة عربية</option><option>لغة إنجليزية</option><option>فرنساوي</option><option>مواد أخرى</option></select></div>
+              <div class="field"><label for="appTeacherStage">المرحلة</label><select id="appTeacherStage" name="stage" required><option value="">اختر المرحلة</option><option value="primary">ابتدائي</option><option value="preparatory">إعدادي</option><option value="secondary">ثانوي</option></select></div>
+              <div class="field"><label for="appTeacherExperience">سنوات الخبرة</label><select id="appTeacherExperience" name="experience" required><option value="">اختر</option><option value="0">بدون خبرة</option><option value="1-3">من سنة إلى 3</option><option value="4-7">من 4 إلى 7</option><option value="8+">8 سنوات فأكثر</option></select></div>
+            </div>
+            <div class="field" style="margin-top:16px">
+              <label for="appTeacherBio">نبذة عن خبرتك وطريقة التدريس</label>
+              <input id="appTeacherBio" name="bio" required maxlength="600" placeholder="اكتب نبذة مختصرة">
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+              <button class="btn btn-primary" type="submit">مراجعة الطلب</button>
+              <button class="btn btn-outline" type="reset">مسح البيانات</button>
+            </div>
+            <p class="results-line">لن يتم تخزين البيانات أو إرسالها إلى خادم في هذه النسخة.</p>
+          </form>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-notifications" hidden>
+        <div class="view-title">
+          <h2>الإشعارات</h2>
+          <p>هنا ستظهر تنبيهات الدروس والامتحانات وطلبات الدفع عند تفعيل النظام.</p>
+        </div>
+        <div class="panel">
+          <div class="empty-state">
+            <div class="empty-icon">♧</div>
+            <h4>لا توجد إشعارات متصلة</h4>
+            <p>لم يتم توصيل خدمة الإشعارات بعد، لذلك لن نعرض تنبيهات وهمية.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-settings" hidden>
+        <div class="view-title">
+          <h2>الإعدادات</h2>
+          <p>إعدادات واجهة بسيطة. إعدادات الحساب الحساسة تحتاج تسجيل دخول وخادمًا آمنًا.</p>
+        </div>
+        <div class="panel">
+          <form id="preferencesForm">
+            <div class="field" style="max-width:350px">
+              <label for="displayName">الاسم المعروض على هذه الصفحة</label>
+              <input id="displayName" maxlength="60" placeholder="زائر المنصة">
+            </div>
+            <div class="field" style="max-width:350px;margin-top:15px">
+              <label for="displayRole">نوع الحساب للعرض فقط</label>
+              <select id="displayRole">
+                <option value="زائر المنصة">زائر</option>
+                <option value="طالب">طالب</option>
+                <option value="مدرس">مدرس</option>
+                <option value="ولي أمر">ولي أمر</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+              <button class="btn btn-primary" type="submit">تحديث العرض</button>
+              <button class="btn btn-outline" type="button" data-action="logout">العودة لصفحة الدخول</button>
+            </div>
+            <p class="results-line">هذه الإعدادات محلية للواجهة الحالية وليست بيانات حساب محفوظة على خادم.</p>
+          </form>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <strong>المستقبلي | MOSTAQBALI</strong><br>
+        منصتك التعليمية نحو مستقبل أفضل.<br>
+        © <span id="currentYear"></span> — نسخة واجهة قيد التطوير
+      </footer>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+(() => {
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+  const views = {
+    overview: { title: "الرئيسية", subtitle: "مساحتك التعليمية في مكان واحد" },
+    courses: { title: "الكورسات والدروس", subtitle: "اكتشف المحتوى المناسب لمرحلتك" },
+    teachers: { title: "المدرسون", subtitle: "ابحث عن مدرس حسب احتياجاتك" },
+    exams: { title: "الامتحانات", subtitle: "تدريبات وامتحانات لقياس مستواك" },
+    results: { title: "النتائج والتقدم", subtitle: "تابع تقدمك بناءً على نتائجك الفعلية" },
+    parent: { title: "متابعة ولي الأمر", subtitle: "متابعة الطالب بصلاحيات واضحة" },
+    subscriptions: { title: "الاشتراكات والدفع", subtitle: "حالة الاشتراكات وإثباتات الدفع" },
+    "teacher-apply": { title: "التقديم كمدرس", subtitle: "ابدأ طلب الانضمام إلى المنصة" },
+    notifications: { title: "الإشعارات", subtitle: "تنبيهات المنصة وحسابك" },
+    settings: { title: "الإعدادات", subtitle: "تخصيص مظهر حسابك على هذه الواجهة" }
+  };
+
+  const sidebar = $("#sidebar");
+  const overlay = $("#overlay");
+  const mobileMenu = $("#mobileMenu");
+  const toast = $("#toast");
+  const globalSearch = $("#globalSearch");
+  let toastTimer;
+
+  $("#currentYear").textContent = String(new Date().getFullYear());
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("visible");
+    mobileMenu.setAttribute("aria-expanded", "false");
+  }
+
+  function openSidebar() {
+    sidebar.classList.add("open");
+    overlay.classList.add("visible");
+    mobileMenu.setAttribute("aria-expanded", "true");
+  }
+
+  function navigate(viewName) {
+    if (!Object.hasOwn(views, viewName)) {
+      showToast("القسم المطلوب غير متاح.");
+      return;
+    }
+
+    $$(".page-view").forEach(view => {
+      view.hidden = view.id !== `view-${viewName}`;
+    });
+
+    $$(".nav-item[data-view]").forEach(button => {
+      button.classList.toggle("active", button.dataset.view === viewName);
+    });
+
+    $("#topTitle").textContent = views[viewName].title;
+    $("#topSubtitle").textContent = views[viewName].subtitle;
+
+    closeSidebar();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (viewName === "courses" && globalSearch.value.trim()) {
+      $("#courseSubject").value = findSubject(globalSearch.value.trim());
+    }
+  }
+
+  function findSubject(query) {
+    const normalized = query.trim().toLowerCase();
+    const options = [...$("#courseSubject").options];
+    const found = options.find(option => option.value && option.text.toLowerCase().includes(normalized));
+    return found ? found.value : "";
+  }
+
+  function searchPlatform(query) {
+    const value = query.trim();
+    if (!value) {
+      showToast("اكتب اسم مادة أو مدرس أو كورس للبحث.");
+      return;
+    }
+
+    navigate("courses");
+
+    const subject = findSubject(value);
+    if (subject) {
+      $("#courseSubject").value = subject;
+      showToast(`تم اختيار مادة ${subject}. نتائج البحث الفعلية تحتاج اتصال قاعدة البيانات.`);
+    } else {
+      showToast("واجهة البحث جاهزة، لكن نتائج المدرسين والكورسات ستظهر بعد ربط قاعدة البيانات.");
+    }
+  }
+
+  document.addEventListener("click", event => {
+    const viewButton = event.target.closest("[data-view]");
+    if (viewButton) {
+      event.preventDefault();
+      navigate(viewButton.dataset.view);
+      return;
+    }
+
+    const subjectButton = event.target.closest("[data-subject]");
+    if (subjectButton) {
+      navigate("courses");
+      const subject = subjectButton.dataset.subject;
+      const option = [...$("#courseSubject").options].find(item => item.text === subject);
+      if (option) $("#courseSubject").value = option.value || option.text;
+      showToast(`تم اختيار ${subject}. الكورسات الفعلية ستظهر بعد ربط قاعدة البيانات.`);
+      return;
+    }
+
+    const actionButton = event.target.closest("[data-action]");
+    if (!actionButton) return;
+
+    const action = actionButton.dataset.action;
+    const messages = {
+      support: "مركز الدعم غير متصل بعد. سيتم تفعيله عند تجهيز خدمة الدعم.",
+      schedule: "إدارة الجدول تحتاج حفظ المواعيد في حسابك. لم يتم حفظ أي بيانات.",
+      "course-search": "تمت قراءة فلاتر الكورسات. لا توجد قاعدة بيانات متصلة لإظهار النتائج.",
+      "teacher-search": "تمت قراءة فلاتر المدرسين. النتائج الفعلية تحتاج قاعدة بيانات.",
+      "exam-search": "لا توجد امتحانات منشورة متصلة بالمنصة حاليًا.",
+      "parent-link": "طلب الربط غير مرسل. ربط ولي الأمر يحتاج تحققًا آمنًا من الخادم.",
+      "parent-progress": "بيانات التقدم غير متاحة قبل ربط حساب الطالب.",
+      "subscription-view": "لا توجد اشتراكات محملة من خادم.",
+      "payment-proof": "رفع إثبات الدفع غير مفعّل. لا ترسل أموالًا عبر هذه الواجهة.",
+      "payment-status": "حالة الدفع غير متاحة قبل توصيل نظام المدفوعات.",
+      logout: "سيتم فتح صفحة تسجيل الدخول. هذه الصفحة لا تنشئ جلسة دخول فعلية."
+    };
+
+    if (action === "logout") {
+      window.location.href = "auth.html";
+      return;
+    }
+
+    showToast(messages[action] || "هذه الوظيفة ستُفعّل عند ربط الخدمة المطلوبة.");
+  });
+
+  mobileMenu.addEventListener("click", () => {
+    sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+  });
+
+  overlay.addEventListener("click", closeSidebar);
+
+  $("#globalSearchForm").addEventListener("submit", event => {
+    event.preventDefault();
+    searchPlatform(globalSearch.value);
+  });
+
+  $("#teacherApplicationForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+
+    showToast("تم التحقق من الحقول في المتصفح فقط. لم يتم إرسال الطلب أو حفظه.");
+    form.reset();
+  });
+
+  $("#preferencesForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const name = $("#displayName").value.trim().slice(0, 60) || "زائر المنصة";
+    const role = $("#displayRole").value;
+
+    $("#profileName").textContent = name;
+    $("#profileRole").textContent = role;
+    $("#profileAvatar").textContent = [...name][0] || "م";
+
+    showToast("تم تحديث الاسم المعروض في هذه الصفحة فقط.");
+  });
+
+  // اختيار المادة من قائمة الكورسات يحدّث الفلتر فقط.
+  $$("[data-action='course-search']").forEach(button => {
+    button.addEventListener("click", () => {
+      const stage = $("#courseStage").value;
+      const grade = $("#courseGrade").value;
+      const subject = $("#courseSubject").value;
+
+      const chosen = [
+        subject || "كل المواد",
+        stage || "كل المراحل",
+        grade || "كل الصفوف"
+      ];
+
+      showToast(`الفلاتر: ${chosen.join(" — ")}. لا توجد بيانات كورسات متصلة بعد.`);
+    });
+  });
+
+  // إزالة أي صورة شخصية أو بيانات حساب تجريبية من دون اعتمادها كبيانات حقيقية.
+  try {
+    const savedName = sessionStorage.getItem("mostaqbali_display_name");
+    if (savedName) {
+      $("#displayName").value = savedName;
+      $("#profileName").textContent = savedName;
+      $("#profileAvatar").textContent = [...savedName][0] || "م";
+    }
+  } catch (_) {
+    // التخزين قد يكون معطلاً في بعض أوضاع المتصفح.
+  }
+
+  // لا نعتبر وجود config.js شرطًا لتشغيل الواجهة.
+  if (window.MOSTAQBALI_CONFIG?.app?.name) {
+    document.title = `الرئيسية | ${window.MOSTAQBALI_CONFIG.app.name} MOSTAQBALI`;
+  }
+
+  // إغلاق القائمة الجانبية عند الانتقال إلى عرض واسع.
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 950) closeSidebar();
+  });
+})();
+</script>
+</body>
+          </html>
