@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101B3D">
+<title>لوحة المدرس | المستقبلي</title>
+
+<style>
+:root{
+  --navy:#101B3D;
+  --blue:#2864F0;
+  --purple:#7957E8;
+  --bg:#F4F7FC;
+  --white:#fff;
+  --text:#182344;
+  --muted:#7A849D;
+  --border:#E5EAF4;
+  --green:#159B70;
+  --red:#D64B60;
+  --shadow:0 8px 28px rgba(25,45,100,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;line-height:1.7;
+}
+button,input,select,textarea{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.container{width:min(1250px,calc(100% - 32px));margin:auto}
+
+.header{
+  position:sticky;top:0;z-index:20;background:#ffffffed;
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+}
+.nav{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--navy)}
+.logo{
+  width:43px;height:43px;border-radius:14px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:grid;place-items:center;color:white;
+}
+.logo svg{width:27px;height:27px}
+.brand small{display:block;font-size:10px;letter-spacing:1px;color:var(--muted)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.user-mini{display:flex;align-items:center;gap:9px}
+.avatar{
+  width:39px;height:39px;border-radius:13px;
+  display:grid;place-items:center;background:#E9EEFF;color:var(--blue);
+  font-weight:900;overflow:hidden;flex-shrink:0;
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.user-name{font-size:12px;font-weight:900}
+.user-role{font-size:10px;color:var(--muted)}
+.btn{
+  border:0;border-radius:11px;padding:10px 15px;
+  font-size:12px;font-weight:800;display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;transition:.2s;
+}
+.btn:hover{transform:translateY(-1px)}
+.primary{background:linear-gradient(110deg,var(--blue),var(--purple));color:white}
+.light{background:#EDF2FF;color:var(--blue)}
+.outline{background:white;border:1px solid var(--border);color:var(--navy)}
+.danger{background:#FFF0F2;color:var(--red)}
+.menu-button{display:none;border:1px solid var(--border);background:white;border-radius:10px;padding:8px 12px;font-size:20px}
+
+.page-head{
+  background:linear-gradient(115deg,#101B3D,#203B7D 67%,#6046B8);
+  color:white;padding:34px 0 60px;position:relative;overflow:hidden;
+}
+.page-head:after{
+  content:"";position:absolute;left:-80px;top:-180px;
+  width:370px;height:370px;border:1px solid #ffffff22;border-radius:50%;
+}
+.head-content{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.kicker{font-size:11px;color:#D6E0FF;background:#ffffff15;border:1px solid #ffffff25;border-radius:30px;padding:6px 11px;display:inline-block}
+.page-head h1{font-size:clamp(26px,4vw,38px);line-height:1.4;margin:13px 0 8px}
+.page-head p{font-size:13px;color:#D6E0FF;margin:0;max-width:650px}
+.head-actions{display:flex;gap:9px;flex-wrap:wrap}
+.white-button{background:white;color:var(--navy)}
+main{padding:0 0 55px}
+.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:20px;margin-top:-30px;position:relative;z-index:2;align-items:start}
+.sidebar,.panel,.stat-card{
+  background:white;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);
+}
+.sidebar{padding:15px;position:sticky;top:90px}
+.side-label{font-size:10px;color:#9AA4B8;font-weight:900;padding:8px 10px}
+.side-link{
+  width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;
+  border:0;background:transparent;color:#65718C;border-radius:11px;
+  text-align:right;font-size:12px;margin-bottom:3px;
+}
+.side-link .ico{width:25px;text-align:center;font-size:17px}
+.side-link:hover,.side-link.active{background:#EDF2FF;color:var(--blue);font-weight:900}
+.sidebar-divider{height:1px;background:var(--border);margin:12px 0}
+.side-hint{padding:13px;background:#F4F6FF;border-radius:12px;color:#65718C;font-size:10px;line-height:1.9;margin-top:15px}
+.content{min-width:0}
+.demo-notice{
+  background:#FFF8E8;border:1px solid #F0E1B5;color:#826B2B;
+  border-radius:13px;padding:13px 15px;font-size:11px;line-height:1.9;margin-bottom:17px;
+}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.stat-card{padding:17px;min-width:0}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.stat-icon{width:38px;height:38px;border-radius:12px;background:#EDF2FF;color:var(--blue);display:grid;place-items:center;font-size:19px}
+.stat-value{font-size:24px;font-weight:900;color:var(--navy);margin-top:13px}
+.stat-label{font-size:11px;color:var(--muted)}
+.stat-sub{font-size:10px;color:#9AA4B8;margin-top:3px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 13px}
+.section-head h2{font-size:18px;margin:0;color:var(--navy)}
+.section-head p{font-size:11px;color:var(--muted);margin:3px 0 0}
+.panel{padding:19px;margin-bottom:17px}
+.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.panel-title h3{font-size:15px;margin:0}
+.panel-title p{font-size:11px;color:var(--muted);margin:4px 0 0}
+.panel-title .btn{flex-shrink:0}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.quick-card{
+  border:1px solid var(--border);border-radius:14px;padding:17px;
+  background:#fff;text-align:right;transition:.2s;min-width:0;
+}
+.quick-card:hover{border-color:#B9C9FF;background:#FAFBFF;transform:translateY(-2px)}
+.quick-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#EDF2FF;color:var(--blue);font-size:20px;margin-bottom:12px}
+.quick-card strong{font-size:12px;display:block;color:var(--navy)}
+.quick-card span{font-size:10px;color:var(--muted);display:block;margin-top:5px;line-height:1.8}
+.empty{
+  padding:30px 16px;text-align:center;border:1px dashed #D8E0F0;
+  border-radius:14px;background:#FCFDFF;
+}
+.empty-icon{width:55px;height:55px;margin:0 auto 12px;border-radius:17px;background:#EDF2FF;color:var(--blue);display:grid;place-items:center;font-size:24px}
+.empty h3{font-size:14px;margin:0 0 7px;color:var(--navy)}
+.empty p{font-size:11px;color:var(--muted);line-height:1.9;max-width:440px;margin:0 auto 14px}
+.course-list{display:grid;gap:10px}
+.course-row{
+  border:1px solid var(--border);border-radius:13px;padding:13px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.course-info{display:flex;align-items:center;gap:11px;min-width:0}
+.course-icon{width:43px;height:43px;flex-shrink:0;border-radius:13px;background:#F0EDFF;color:var(--purple);display:grid;place-items:center;font-size:18px}
+.course-name{font-size:12px;font-weight:900;overflow-wrap:anywhere}
+.course-meta{font-size:10px;color:var(--muted);margin-top:4px}
+.badge{display:inline-block;padding:5px 8px;border-radius:8px;font-size:10px;background:#F0F2F7;color:#77829A;white-space:nowrap}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th,td{text-align:right;padding:12px 10px;border-bottom:1px solid #EEF1F7;font-size:11px}
+th{color:#8B95AA;font-weight:700;background:#FBFCFE}
+td{color:#4E5B77}
+.status{padding:5px 8px;border-radius:8px;background:#F1F3F8;color:#77829A;font-size:10px;white-space:nowrap}
+.status.pending{background:#FFF6DF;color:#9A7825}
+.status.approved{background:#E7F8F0;color:#13875F}
+.profile-progress{display:flex;align-items:center;gap:13px}
+.progress-circle{
+  width:61px;height:61px;border-radius:50%;
+  background:conic-gradient(var(--blue) 0deg,#E8ECF5 0deg);
+  display:grid;place-items:center;flex-shrink:0;
+}
+.progress-circle span{width:47px;height:47px;border-radius:50%;background:white;display:grid;place-items:center;font-size:12px;font-weight:900}
+.profile-progress h3{font-size:13px;margin:0}
+.profile-progress p{font-size:10px;color:var(--muted);margin:4px 0 0;line-height:1.8}
+.footer{padding:22px 0;border-top:1px solid var(--border);color:var(--muted);font-size:11px}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.modal-backdrop{display:none;position:fixed;inset:0;z-index:100;background:#101B3D99;backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open{display:flex}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:white;border-radius:20px;padding:23px;box-shadow:0 25px 80px #0003}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+.modal-head h2{font-size:19px;margin:0}
+.close{width:35px;height:35px;border:1px solid var(--border);border-radius:10px;background:white;font-size:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.field{margin-bottom:14px}
+.field.full{grid-column:1/-1}
+.field label{display:block;font-size:11px;font-weight:900;margin-bottom:7px}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid #DEE5F1;border-radius:10px;padding:11px;
+  outline:none;background:#FBFCFF;font-size:12px;color:var(--text)
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2864f012}
+.modal-note{font-size:10px;color:#826B2B;background:#FFF8E8;border:1px solid #F0E1B5;border-radius:10px;padding:11px;line-height:1.9;margin-bottom:15px}
+.modal-actions{display:flex;gap:9px;flex-wrap:wrap}
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);
+  z-index:150;background:var(--navy);color:white;padding:12px 17px;
+  border-radius:12px;font-size:12px;opacity:0;pointer-events:none;
+  transition:.2s;max-width:calc(100% - 30px);text-align:center
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+body.modal-open{overflow:hidden}
+@media(max-width:1000px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layout{grid-template-columns:205px minmax(0,1fr)}
+  .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+  .container{width:calc(100% - 24px)}
+  .nav{min-height:65px}.menu-button{display:block}
+  .user-name{max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nav-right>.btn{display:none}
+  .layout{grid-template-columns:1fr;margin-top:-24px}
+  .sidebar{position:static;display:none}
+  .sidebar.open{display:block}
+  .side-links{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+  .side-hint{display:none}
+  .head-content{align-items:flex-start;flex-direction:column}
+  .page-head{padding:27px 0 50px}
+  .page-head h1{font-size:27px}
+  .stats{gap:9px}
+  .stat-card{padding:12px}
+  .stat-value{font-size:21px}
+  .quick-grid{grid-template-columns:1fr 1fr}
+  .panel{padding:14px}
+}
+@media(max-width:420px){
+  .brand{gap:7px}.brand>span:last-child{font-size:13px}
+  .logo{width:37px;height:37px}
+  .stats{grid-template-columns:1fr 1fr}
+  .quick-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .course-row{align-items:flex-start;flex-direction:column}
+  .section-head{align-items:flex-start;flex-direction:column}
+}
+</style>
+</head>
+
+<body>
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="home.html">
+      <span class="logo">
+        <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M8 29V11L20 22L32 11V29" stroke="white" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>المستقبلي<small>MOSTAQBALI</small></span>
+    </a>
+
+    <div class="nav-right">
+      <div class="user-mini">
+        <div class="avatar" id="headerAvatar">م</div>
+        <div>
+          <div class="user-name" id="headerName">لوحة المدرس</div>
+          <div class="user-role">حساب مدرس</div>
+        </div>
+      </div>
+      <a class="btn outline" href="teachers.html">دليل المدرسين</a>
+      <button class="menu-button" id="menuButton" aria-label="القائمة" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="container head-content">
+    <div>
+      <span class="kicker">مساحة إدارة التدريس</span>
+      <h1>أهلًا بيك في لوحة المدرس</h1>
+      <p>جهّز محتواك التعليمي، ونظّم دروسك وامتحاناتك، وتابع طلابك من مكان واحد.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn white-button" id="newCourseTop">＋ إنشاء كورس</button>
+      <a class="btn" style="background:#ffffff18;color:white;border:1px solid #ffffff30" href="courses.html">عرض الكورسات</a>
+    </div>
+  </div>
+</section>
+
+<main>
+<div class="container layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-label">القائمة الرئيسية</div>
+    <div class="side-links">
+      <button class="side-link active" data-section="overview"><span class="ico">▦</span> نظرة عامة</button>
+      <button class="side-link" data-section="myCourses"><span class="ico">▤</span> كورساتي</button>
+      <button class="side-link" data-section="lessons"><span class="ico">▷</span> الدروس والوحدات</button>
+      <button class="side-link" data-section="exams"><span class="ico">✓</span> الامتحانات</button>
+      <button class="side-link" data-section="students"><span class="ico">♙</span> الطلاب</button>
+      <button class="side-link" data-section="profile"><span class="ico">◎</span> ملفي الشخصي</button>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="side-label">روابط المنصة</div>
+    <div class="side-links">
+      <a class="side-link" href="home.html"><span class="ico">⌂</span> الصفحة الرئيسية</a>
+      <a class="side-link" href="teachers.html"><span class="ico">♧</span> دليل المدرسين</a>
+      <a class="side-link" href="courses.html"><span class="ico">▥</span> تصفح الكورسات</a>
+      <a class="side-link" href="auth.html"><span class="ico">⇥</span> صفحة الدخول</a>
+    </div>
+    <div class="side-hint">لوحة الواجهة الحالية لا تتصل بقاعدة بيانات. أنشئ محتوى تجريبيًا داخل المتصفح للاختبار فقط، ولا تضع بيانات طلاب حقيقية.</div>
+  </aside>
+
+  <div class="content">
+    <div class="demo-notice">
+      <strong>وضع تجريبي:</strong>
+      العناصر التي تنشئها هنا تُحفظ في مساحة هذا المتصفح فقط. لا يوجد حاليًا حساب مدرس موثّق أو رفع ملفات أو نشر حقيقي للكورسات. بيانات هذه اللوحة ليست بيانات إنتاجية.
+    </div>
+
+    <section class="stats" id="stats">
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">الكورسات</span><span class="stat-icon">▤</span></div>
+        <div class="stat-value" id="courseCount">0</div>
+        <div class="stat-sub">كورسات في هذا المتصفح</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">الوحدات والدروس</span><span class="stat-icon">▷</span></div>
+        <div class="stat-value" id="lessonCount">0</div>
+        <div class="stat-sub">عناصر محتوى تجريبية</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">الامتحانات</span><span class="stat-icon">✓</span></div>
+        <div class="stat-value" id="examCount">0</div>
+        <div class="stat-sub">امتحانات تجريبية</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">الطلاب</span><span class="stat-icon">♙</span></div>
+        <div class="stat-value">—</div>
+        <div class="stat-sub">تحتاج إلى ربط قاعدة البيانات</div>
+      </article>
+    </section>
+
+    <section id="overviewSection">
+      <div class="section-head">
+        <div><h2>ابدأ من هنا</h2><p>اختصارات لأهم مهام المدرس.</p></div>
+      </div>
+
+      <div class="panel">
+        <div class="quick-grid">
+          <button class="quick-card" data-open="course">
+            <span class="quick-icon">＋</span>
+            <strong>إنشاء كورس جديد</strong>
+            <span>أضف اسم الكورس والمادة والمرحلة والصف.</span>
+          </button>
+          <button class="quick-card" data-open="lesson">
+            <span class="quick-icon">▷</span>
+            <strong>إضافة درس</strong>
+            <span>سجّل عنوان الدرس واربطه بكورس موجود.</span>
+          </button>
+          <button class="quick-card" data-open="exam">
+            <span class="quick-icon">✓</span>
+            <strong>إنشاء امتحان</strong>
+            <span>جهّز اسم الامتحان والكورس المرتبط به.</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="myCoursesSection">
+      <div class="section-head">
+        <div><h2>كورساتي</h2><p>إدارة الكورسات التي أضفتها في الوضع التجريبي.</p></div>
+        <button class="btn primary" id="newCourse">＋ كورس جديد</button>
+      </div>
+      <div class="panel">
+        <div class="course-list" id="courseList"></div>
+        <div class="empty" id="courseEmpty">
+          <div class="empty-icon">▤</div>
+          <h3>لسه مفيش كورسات</h3>
+          <p>أنشئ أول كورس تجريبي وشوف إزاي هيظهر في لوحة المدرس. الكورس مش هيتنشر للطلاب فعليًا.</p>
+          <button class="btn primary" data-open="course">إنشاء أول كورس</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="lessonsSection">
+      <div class="section-head">
+        <div><h2>الوحدات والدروس</h2><p>أضف عناصر تعليمية تجريبية إلى الكورسات.</p></div>
+        <button class="btn primary" id="newLesson">＋ إضافة درس</button>
+      </div>
+      <div class="panel">
+        <div class="course-list" id="lessonList"></div>
+        <div class="empty" id="lessonEmpty">
+          <div class="empty-icon">▷</div>
+          <h3>لا توجد دروس مضافة</h3>
+          <p>أنشئ كورسًا أولًا، ثم أضف إليه درسًا. رفع الفيديوهات والملفات غير مفعّل في هذه النسخة.</p>
+          <button class="btn light" data-open="lesson">إضافة درس تجريبي</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="examsSection">
+      <div class="section-head">
+        <div><h2>الامتحانات</h2><p>قائمة الامتحانات التي أعددتها محليًا.</p></div>
+        <button class="btn primary" id="newExam">＋ امتحان جديد</button>
+      </div>
+      <div class="panel">
+        <div class="course-list" id="examList"></div>
+        <div class="empty" id="examEmpty">
+          <div class="empty-icon">✓</div>
+          <h3>لا توجد امتحانات</h3>
+          <p>يمكنك إضافة اسم امتحان تجريبي وربطه بكورس. محرر الأسئلة والتصحيح والنتائج يحتاج إلى مرحلة تطوير لاحقة.</p>
+          <button class="btn light" data-open="exam">إنشاء امتحان تجريبي</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="studentsSection">
+      <div class="section-head">
+        <div><h2>الطلاب</h2><p>بيانات الطلاب المسجلين في كورساتك.</p></div>
+      </div>
+      <div class="panel">
+        <div class="empty">
+          <div class="empty-icon">♙</div>
+          <h3>قائمة الطلاب غير متاحة بعد</h3>
+          <p>لن نعرض أسماء أو أرقامًا وهمية. ستظهر بيانات الطلاب الفعلية بعد إنشاء نظام الحسابات والاشتراكات وربط قاعدة البيانات.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="profileSection">
+      <div class="section-head">
+        <div><h2>ملفي الشخصي</h2><p>معلومات تعريفية محلية لهذا النموذج التجريبي.</p></div>
+      </div>
+      <div class="panel">
+        <div class="profile-progress">
+          <div class="progress-circle"><span>تجريبي</span></div>
+          <div>
+            <h3 id="profileName">مدرس تجريبي</h3>
+            <p>حالة الحساب: غير موثّق — لا يوجد اعتماد حقيقي من الإدارة.</p>
+            <p>يمكن تعديل الاسم الظاهر هنا؛ لن يتم إنشاء حساب أو إرسال بيانات إلى خادم.</p>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:18px 0"></div>
+        <form id="profileForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="teacherName">الاسم الظاهر</label>
+              <input id="teacherName" maxlength="80" placeholder="اكتب اسمًا تجريبيًا">
+            </div>
+            <div class="field">
+              <label for="teacherSubject">المادة الأساسية</label>
+              <select id="teacherSubject">
+                <option value="">اختر المادة</option>
+                <option>اللغة العربية</option><option>اللغة الإنجليزية</option>
+                <option>اللغة الفرنسية</option><option>الرياضيات</option>
+                <option>الفيزياء</option><option>الكيمياء</option><option>الأحياء</option>
+                <option>التاريخ</option><option>الجغرافيا</option><option>الفلسفة والمنطق</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn primary" type="submit">حفظ محلي</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>© <span id="year"></span> المستقبلي MOSTAQBALI</span>
+    <span>لوحة تجريبية — لا تتضمن بيانات حقيقية للطلاب.</span>
+  </div>
+</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">إضافة عنصر</h2>
+      <button class="close" id="closeModal" type="button" aria-label="إغلاق">×</button>
+    </div>
+    <form id="itemForm">
+      <div id="modalFields"></div>
+      <div class="modal-note">سيتم حفظ العنصر في تخزين المتصفح لهذا الجهاز فقط. لا يتم رفعه إلى المنصة ولا يظهر للطلاب الآخرين.</div>
+      <div class="modal-actions">
+        <button class="btn primary" type="submit">حفظ تجريبي</button>
+        <button class="btn outline" type="button" id="cancelModal">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $ = selector => document.querySelector(selector);
+const STORAGE_KEY = "mostaqbali_teacher_dashboard_demo_v1";
+
+const defaultState = {
+  courses: [],
+  lessons: [],
+  exams: [],
+  profile: { name: "", subject: "" }
+};
+
+let appState = loadState();
+let currentFormType = "";
+
+function loadState(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(!saved) return structuredClone(defaultState);
+    const parsed = JSON.parse(saved);
+    return {
+      courses: Array.isArray(parsed.courses) ? parsed.courses : [],
+      lessons: Array.isArray(parsed.lessons) ? parsed.lessons : [],
+      exams: Array.isArray(parsed.exams) ? parsed.exams : [],
+      profile: parsed.profile && typeof parsed.profile === "object"
+        ? parsed.profile
+        : {name:"",subject:""}
+    };
+  }catch(error){
+    return structuredClone(defaultState);
+  }
+}
+
+function persistState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    return true;
+  }catch(error){
+    notify("تعذر الحفظ في المتصفح. قد تكون مساحة التخزين ممتلئة.");
+    return false;
+  }
+}
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+let toastTimer;
+function notify(message){
+  const toast = $("#toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 3300);
+}
+
+function id(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+function courseOptions(){
+  if(appState.courses.length === 0){
+    return '<option value="">أنشئ كورسًا أولًا</option>';
+  }
+  return '<option value="">اختر الكورس</option>' +
+    appState.courses.map(course =>
+      `<option value="${escapeHTML(course.id)}">${escapeHTML(course.title)}</option>`
+    ).join("");
+}
+
+function openForm(type){
+  currentFormType = type;
+  const titles = {
+    course:"إنشاء كورس تجريبي",
+    lesson:"إضافة درس تجريبي",
+    exam:"إنشاء امتحان تجريبي"
+  };
+  $("#modalTitle").textContent = titles[type] || "إضافة عنصر";
+
+  if(type === "course"){
+    $("#modalFields").innerHTML = `
+      <div class="form-grid">
+        <div class="field full">
+          <label for="itemTitle">اسم الكورس *</label>
+          <input id="itemTitle" name="title" required maxlength="120" placeholder="مثال: مراجعة الفيزياء">
+        </div>
+        <div class="field">
+          <label for="itemSubject">المادة *</label>
+          <select id="itemSubject" name="subject" required>
+            <option value="">اختر المادة</option>
+            <option>اللغة العربية</option><option>اللغة الإنجليزية</option>
+            <option>اللغة الفرنسية</option><option>الرياضيات</option>
+            <option>الفيزياء</option><option>الكيمياء</option><option>الأحياء</option>
+            <option>التاريخ</option><option>الجغرافيا</option><option>الفلسفة والمنطق</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="itemStage">المرحلة *</label>
+          <select id="itemStage" name="stage" required>
+            <option value="">اختر المرحلة</option>
+            <option>ابتدائي</option><option>إعدادي</option><option>ثانوي</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="itemGrade">الصف الدراسي *</label>
+          <select id="itemGrade" name="grade" required>
+            <option value="">اختر الصف</option>
+            <option>الصف الأول الابتدائي</option><option>الصف الثاني الابتدائي</option>
+            <option>الصف الثالث الابتدائي</option><option>الصف الرابع الابتدائي</option>
+            <option>الصف الخامس الابتدائي</option><option>الصف السادس الابتدائي</option>
+            <option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option>
+            <option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option>
+            <option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="itemDescription">وصف الكورس</label>
+          <textarea id="itemDescription" name="description" rows="3" maxlength="600" placeholder="نبذة مختصرة عن المحتوى"></textarea>
+        </div>
+      </div>`;
+  }else if(type === "lesson"){
+    if(appState.courses.length === 0){
+      notify("أنشئ كورسًا أولًا قبل إضافة درس.");
+      return;
+    }
+    $("#modalFields").innerHTML = `
+      <div class="field">
+        <label for="itemCourse">الكورس *</label>
+        <select id="itemCourse" name="courseId" required>${courseOptions()}</select>
+      </div>
+      <div class="field">
+        <label for="itemTitle">عنوان الدرس *</label>
+        <input id="itemTitle" name="title" required maxlength="120" placeholder="عنوان الدرس">
+      </div>
+      <div class="field">
+        <label for="itemUnit">اسم الوحدة</label>
+        <input id="itemUnit" name="unit" maxlength="120" placeholder="الوحدة الأولى">
+      </div>
+      <div class="field">
+        <label for="itemDuration">المدة بالدقائق</label>
+        <input id="itemDuration" name="duration" type="number" min="1" max="1000" placeholder="مثال: 35">
+      </div>`;
+  }else if(type === "exam"){
+    if(appState.courses.length === 0){
+      notify("أنشئ كورسًا أولًا قبل إضافة امتحان.");
+      return;
+    }
+    $("#modalFields").innerHTML = `
+      <div class="field">
+        <label for="itemCourse">الكورس *</label>
+        <select id="itemCourse" name="courseId" required>${courseOptions()}</select>
+      </div>
+      <div class="field">
+        <label for="itemTitle">اسم الامتحان *</label>
+        <input id="itemTitle" name="title" required maxlength="120" placeholder="امتحان الوحدة الأولى">
+      </div>
+      <div class="field">
+        <label for="itemDuration">المدة بالدقائق</label>
+        <input id="itemDuration" name="duration" type="number" min="1" max="600" placeholder="مثال: 30">
+      </div>
+      <div class="field">
+        <label for="itemQuestions">عدد الأسئلة المخطط له</label>
+        <input id="itemQuestions" name="questions" type="number" min="1" max="300" placeholder="مثال: 20">
+      </div>`;
+  }
+
+  $("#modalBackdrop").classList.add("open");
+  document.body.classList.add("modal-open");
+  setTimeout(() => $("#modalFields input, #modalFields select")?.focus(), 30);
+}
+
+function closeForm(){
+  $("#modalBackdrop").classList.remove("open");
+  document.body.classList.remove("modal-open");
+  $("#itemForm").reset();
+  $("#modalFields").innerHTML = "";
+  currentFormType = "";
+}
+
+function saveItem(event){
+  event.preventDefault();
+  const form = $("#itemForm");
+  if(!form.reportValidity()) return;
+
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  if(currentFormType === "course"){
+    appState.courses.push({
+      id:id(),
+      title:data.title.trim(),
+      subject:data.subject,
+      stage:data.stage,
+      grade:data.grade,
+      description:(data.description || "").trim(),
+      createdAt:new Date().toISOString()
+    });
+    persistState();
+    closeForm();
+    render();
+    notify("تم حفظ الكورس في المتصفح فقط.");
+    return;
+  }
+
+  const linkedCourse = appState.courses.find(course => course.id === data.courseId);
+  if(!linkedCourse){
+    notify("اختر كورسًا موجودًا.");
+    return;
+  }
+
+  if(currentFormType === "lesson"){
+    appState.lessons.push({
+      id:id(),
+      title:data.title.trim(),
+      courseId:data.courseId,
+      courseTitle:linkedCourse.title,
+      unit:(data.unit || "").trim(),
+      duration:data.duration ? Number(data.duration) : null,
+      createdAt:new Date().toISOString()
+    });
+    persistState();
+    closeForm();
+    render();
+    notify("تم حفظ الدرس التجريبي محليًا.");
+    return;
+  }
+
+  if(currentFormType === "exam"){
+    appState.exams.push({
+      id:id(),
+      title:data.title.trim(),
+      courseId:data.courseId,
+      courseTitle:linkedCourse.title,
+      duration:data.duration ? Number(data.duration) : null,
+      questions:data.questions ? Number(data.questions) : null,
+      createdAt:new Date().toISOString()
+    });
+    persistState();
+    closeForm();
+    render();
+    notify("تم حفظ بيانات الامتحان محليًا. الأسئلة والتصحيح غير مفعّلين.");
+  }
+}
+
+function itemRow(item,type){
+  const icons = {course:"▤",lesson:"▷",exam:"✓"};
+  let meta = "";
+  if(type === "course") meta = `${item.subject} • ${item.stage} • ${item.grade}`;
+  if(type === "lesson") meta = `${item.courseTitle}${item.unit ? " • " + item.unit : ""}${item.duration ? " • " + item.duration + " دقيقة" : ""}`;
+  if(type === "exam") meta = `${item.courseTitle}${item.questions ? " • " + item.questions + " سؤال مخطط" : ""}${item.duration ? " • " + item.duration + " دقيقة" : ""}`;
+
+  return `
+    <article class="course-row">
+      <div class="course-info">
+        <div class="course-icon">${icons[type]}</div>
+        <div>
+          <div class="course-name">${escapeHTML(item.title)}</div>
+          <div class="course-meta">${escapeHTML(meta)}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="badge">محلي</span>
+        <button class="btn danger" data-delete-type="${type}" data-delete-id="${escapeHTML(item.id)}" type="button">حذف</button>
+      </div>
+    </article>`;
+}
+
+function renderList(listId,emptyId,items,type){
+  $(listId).innerHTML = items.map(item => itemRow(item,type)).join("");
+  $(listId).style.display = items.length ? "grid" : "none";
+  $(emptyId).style.display = items.length ? "none" : "block";
+}
+
+function render(){
+  $("#courseCount").textContent = appState.courses.length;
+  $("#lessonCount").textContent = appState.lessons.length;
+  $("#examCount").textContent = appState.exams.length;
+
+  renderList("#courseList","#courseEmpty",appState.courses,"course");
+  renderList("#lessonList","#lessonEmpty",appState.lessons,"lesson");
+  renderList("#examList","#examEmpty",appState.exams,"exam");
+
+  const name = appState.profile.name || "مدرس تجريبي";
+  $("#headerName").textContent = name;
+  $("#profileName").textContent = name;
+  $("#headerAvatar").textContent = name.trim().slice(0,1) || "م";
+  $("#teacherName").value = appState.profile.name || "";
+  $("#teacherSubject").value = appState.profile.subject || "";
+}
+
+function deleteItem(type,itemId){
+  const names = {
+    course:"الكورس",
+    lesson:"الدرس",
+    exam:"الامتحان"
+  };
+  if(!confirm(`هل تريد حذف ${names[type]} من البيانات التجريبية؟`)) return;
+
+  if(type === "course"){
+    appState.courses = appState.courses.filter(item => item.id !== itemId);
+    appState.lessons = appState.lessons.filter(item => item.courseId !== itemId);
+    appState.exams = appState.exams.filter(item => item.courseId !== itemId);
+  }else if(type === "lesson"){
+    appState.lessons = appState.lessons.filter(item => item.id !== itemId);
+  }else if(type === "exam"){
+    appState.exams = appState.exams.filter(item => item.id !== itemId);
+  }
+
+  persistState();
+  render();
+  notify("تم حذف العنصر من بيانات هذا المتصفح.");
+}
+
+document.addEventListener("click",event=>{
+  const opener = event.target.closest("[data-open]");
+  if(opener){
+    openForm(opener.dataset.open);
+    return;
+  }
+
+  const del = event.target.closest("[data-delete-type]");
+  if(del){
+    deleteItem(del.dataset.deleteType,del.dataset.deleteId);
+  }
+});
+
+$("#newCourse").addEventListener("click",()=>openForm("course"));
+$("#newCourseTop").addEventListener("click",()=>openForm("course"));
+$("#newLesson").addEventListener("click",()=>openForm("lesson"));
+$("#newExam").addEventListener("click",()=>openForm("exam"));
+
+$("#itemForm").addEventListener("submit",saveItem);
+$("#closeModal").addEventListener("click",closeForm);
+$("#cancelModal").addEventListener("click",closeForm);
+
+$("#modalBackdrop").addEventListener("click",event=>{
+  if(event.target === $("#modalBackdrop")) closeForm();
+});
+
+document.addEventListener("keydown",event=>{
+  if(event.key === "Escape") closeForm();
+});
+
+$("#profileForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  appState.profile.name = $("#teacherName").value.trim().slice(0,80);
+  appState.profile.subject = $("#teacherSubject").value;
+  persistState();
+  render();
+  notify("تم حفظ بيانات الملف الشخصي محليًا.");
+});
+
+document.querySelectorAll("[data-section]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll("[data-section]").forEach(item=>item.classList.remove("active"));
+    button.classList.add("active");
+
+    const section = document.getElementById(button.dataset.section + "Section");
+    if(section) section.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+});
+
+const menuButton = $("#menuButton");
+menuButton.addEventListener("click",()=>{
+  const opened = $("#sidebar").classList.toggle("open");
+  menuButton.setAttribute("aria-expanded",String(opened));
+  menuButton.textContent = opened ? "×" : "☰";
+});
+
+$("#year").textContent = new Date().getFullYear();
+render();
+</script>
+</body>
+                                          </html>
