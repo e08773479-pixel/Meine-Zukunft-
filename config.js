@@ -1,159 +1,215 @@
 "use strict";
 
-window.MOSTAQBALI_CONFIG = Object.freeze({
-APP_NAME: "المستقبلي",
-APP_NAME_EN: "MOSTAQBALI",
-TAGLINE: "مستقبلك يبدأ من هنا.",
-VERSION: "1.0.0",
-
 /*
+ * MOSTAQBALI — Platform Configuration
+ * الملف الرابع: config.js
+ *
+ * يحتوي على الإعدادات العامة غير السرية.
+ * لا تضع مفاتيح API السرية أو كلمات المرور هنا.
+ */
 
-* اترك API_BASE_URL فارغًا أثناء اختبار الواجهة فقط.
-* عند تجهيز الخادم، ضع عنوان API الحقيقي هنا.
-* 
-* مثال توضيحي فقط:
-* API_BASE_URL: "https://api.example.com"
-  */
-  API_BASE_URL: "",
+(function (global) {
+  const MOSTAQBALI_CONFIG = Object.freeze({
+    // الهوية الأساسية
+    app: Object.freeze({
+      name: "المستقبلي",
+      nameEn: "MOSTAQBALI",
+      version: "1.0.0",
+      language: "ar",
+      direction: "rtl",
+      defaultPage: "login",
+      splashDuration: 5000
+    }),
 
-/*
+    // ألوان الهوية البصرية
+    theme: Object.freeze({
+      primary: "#2864F0",
+      secondary: "#7957E8",
+      navy: "#101B3D",
+      background: "#F4F7FC",
+      surface: "#FFFFFF",
+      text: "#17233F",
+      muted: "#78839B",
+      success: "#159B69",
+      warning: "#E5A323",
+      danger: "#D94343"
+    }),
 
-* الوضع المحلي للواجهة ليس مصادقة حقيقية.
-* لا تضع مفاتيح API السرية داخل هذا الملف.
-  */
-  DEMO_MODE: true,
+    // إعدادات العرض
+    ui: Object.freeze({
+      direction: "rtl",
+      responsive: true,
+      enableAnimations: true,
+      toastDuration: 3500,
+      searchDebounce: 300,
+      itemsPerPage: 12
+    }),
 
-STORAGE_KEYS: Object.freeze({
-PROFILE: "mostaqbali_profile_v1",
-SETTINGS: "mostaqbali_settings_v1",
-SUPPORT: "mostaqbali_support_v1",
-NOTIFICATIONS: "mostaqbali_notifications_v1",
-PROGRESS: "mostaqbali_progress_v1",
-LOCAL_DRAFT: "mostaqbali_draft_v1"
-}),
+    // إعدادات الحسابات
+    accounts: Object.freeze({
+      roles: Object.freeze([
+        "student",
+        "teacher",
+        "parent",
+        "owner"
+      ]),
 
-ROLES: Object.freeze({
-STUDENT: "student",
-TEACHER: "teacher",
-PARENT: "parent",
-ADMIN: "admin",
-SUPPORT: "support"
-}),
+      defaultRole: "student",
+      requireTeacherApproval: true,
+      requireOwnerApprovalForPayments: true
+    }),
 
-ROLE_LABELS: Object.freeze({
-student: "طالب",
-teacher: "مدرس",
-parent: "ولي أمر",
-admin: "مالك المنصة",
-support: "خدمة العملاء"
-}),
+    // إعدادات الاشتراكات
+    subscriptions: Object.freeze({
+      platformCommissionPercent: 20,
+      teacherSharePercent: 80,
+      teacherSubscriptionEnabled: true,
+      studentCourseSubscriptionEnabled: true,
+      paymentApprovalRequired: true
+    }),
 
-STAGES: Object.freeze([
-{ value: "prep", label: "المرحلة الإعدادية" },
-{ value: "secondary", label: "المرحلة الثانوية" },
-{ value: "baccalaureate", label: "البكالوريا" }
-]),
+    // إعدادات الدفع اليدوي
+    payments: Object.freeze({
+      provider: "vodafone_cash",
+      currency: "EGP",
+      automaticActivation: false,
+      requireTransferProof: true,
+      requireOwnerApproval: true,
 
-GRADES: Object.freeze([
-{ value: "first-prep", label: "الأول الإعدادي", stage: "prep" },
-{ value: "second-prep", label: "الثاني الإعدادي", stage: "prep" },
-{ value: "third-prep", label: "الثالث الإعدادي", stage: "prep" },
-{ value: "first-secondary", label: "الأول الثانوي", stage: "secondary" },
-{ value: "second-secondary", label: "الثاني الثانوي", stage: "secondary" },
-{ value: "third-secondary", label: "الثالث الثانوي", stage: "secondary" }
-]),
+      // يحدده مالك المنصة عند تجهيز النظام.
+      // لا تضع رقمًا تجريبيًا هنا.
+      vodafoneCashNumber: ""
+    }),
 
-TRACKS: Object.freeze([
-{ value: "science", label: "علمي علوم" },
-{ value: "math", label: "علمي رياضة" },
-{ value: "literary", label: "أدبي" }
-]),
+    // إعدادات الخدمات الخلفية
+    backend: Object.freeze({
+      enabled: false,
 
-SUBJECTS: Object.freeze([
-{
-id: "physics",
-name: "الفيزياء",
-icon: "∑",
-color: "#2864f0",
-tint: "#eaf0ff",
-description: "القوانين والتطبيقات والمسائل الفيزيائية."
-},
-{
-id: "chemistry",
-name: "الكيمياء",
-icon: "⚗",
-color: "#7957e8",
-tint: "#f0eaff",
-description: "التفاعلات والمعادلات والمفاهيم الكيميائية."
-},
-{
-id: "biology",
-name: "الأحياء",
-icon: "⌘",
-color: "#19a974",
-tint: "#e4f8ef",
-description: "فهم الكائنات الحية وأجهزة الجسم والوراثة."
-},
-{
-id: "arabic",
-name: "اللغة العربية",
-icon: "ع",
-color: "#df8b30",
-tint: "#fff0e0",
-description: "النحو والبلاغة والأدب والقراءة."
-},
-{
-id: "english",
-name: "اللغة الإنجليزية",
-icon: "A",
-color: "#2779c7",
-tint: "#e5f3ff",
-description: "القواعد والقراءة والكتابة والمفردات."
-},
-{
-id: "math",
-name: "الرياضيات",
-icon: "π",
-color: "#d74e69",
-tint: "#fff0f3",
-description: "المفاهيم الرياضية والتدريبات."
-},
-{
-id: "french",
-name: "اللغة الفرنسية",
-icon: "F",
-color: "#7a5bbd",
-tint: "#f0eaff",
-description: "المفردات والقواعد والتدريبات."
-},
-{
-id: "religion",
-name: "التربية الدينية",
-icon: "◈",
-color: "#178b75",
-tint: "#e4f8f1",
-description: "دروس التربية الدينية والمراجعات."
-}
-]),
+      /*
+       * ضع عنوان خادمك الحقيقي بعد نشر الـ Backend.
+       * مثال توضيحي فقط:
+       * https://api.your-domain.com
+       *
+       * لا تستخدم عنوان المثال كما هو.
+       */
+      baseURL: "",
 
-SUBSCRIPTION_STATUS: Object.freeze({
-ACTIVE: "active",
-PENDING: "pending",
-EXPIRED: "expired",
-CANCELLED: "cancelled"
-}),
+      requestTimeout: 15000,
+      credentials: "include"
+    }),
 
-TEACHER_STATUS: Object.freeze({
-PENDING: "pending",
-APPROVED: "approved",
-REJECTED: "rejected",
-SUSPENDED: "suspended"
-}),
+    // إعدادات التخزين المحلي
+    storage: Object.freeze({
+      prefix: "mostaqbali_",
+      saveTheme: true,
+      saveLanguage: true,
+      saveDrafts: true
+    }),
 
-SECURITY: Object.freeze({
-MIN_PASSWORD_LENGTH: 8,
-SESSION_HANDLING: "server_required",
-PAYMENT_VERIFICATION: "server_required",
-ROLE_AUTHORIZATION: "server_required"
-})
-});
+    // إعدادات الامتحانات
+    exams: Object.freeze({
+      options: ["A", "B", "C", "D"],
+      allowQuestionImages: true,
+      saveResults: true,
+      showCorrectAnswersAfterSubmission: true
+    }),
+
+    // إعدادات الملفات
+    uploads: Object.freeze({
+      allowedImageTypes: [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ],
+
+      allowedDocumentTypes: [
+        "application/pdf"
+      ],
+
+      maxImageSizeMB: 5,
+      maxDocumentSizeMB: 20
+    }),
+
+    // إعدادات الاتصال
+    network: Object.freeze({
+      onlineCheckEnabled: true,
+      retryCount: 2,
+      retryDelay: 1000
+    }),
+
+    // إعدادات التطوير
+    development: Object.freeze({
+      debug: false,
+      showErrorDetails: false
+    })
+  });
+
+  // إتاحة الإعدادات لبقية ملفات المشروع.
+  global.MOSTAQBALI_CONFIG = MOSTAQBALI_CONFIG;
+
+  // أدوات مساعدة لقراءة الإعدادات.
+  global.MOSTAQBALI_SETTINGS = Object.freeze({
+    get(path, fallback = undefined) {
+      if (typeof path !== "string" || !path.trim()) {
+        return fallback;
+      }
+
+      const value = path
+        .split(".")
+        .reduce((current, key) => {
+          if (
+            current === null ||
+            current === undefined ||
+            !Object.prototype.hasOwnProperty.call(current, key)
+          ) {
+            return undefined;
+          }
+
+          return current[key];
+        }, MOSTAQBALI_CONFIG);
+
+      return value === undefined ? fallback : value;
+    },
+
+    isBackendConfigured() {
+      return Boolean(
+        MOSTAQBALI_CONFIG.backend.enabled &&
+        MOSTAQBALI_CONFIG.backend.baseURL
+      );
+    },
+
+    getApiURL(path = "") {
+      const baseURL = MOSTAQBALI_CONFIG.backend.baseURL;
+
+      if (!baseURL) {
+        return "";
+      }
+
+      return (
+        baseURL.replace(/\/+$/, "") +
+        "/" +
+        String(path).replace(/^\/+/, "")
+      );
+    }
+  });
+
+  // تحقق من صحة نسب التوزيع.
+  const commission =
+    MOSTAQBALI_CONFIG.subscriptions.platformCommissionPercent;
+
+  const teacherShare =
+    MOSTAQBALI_CONFIG.subscriptions.teacherSharePercent;
+
+  if (commission + teacherShare !== 100) {
+    console.error(
+      "[MOSTAQBALI] خطأ في إعدادات نسب توزيع الإيرادات."
+    );
+  }
+
+  // لا نطبع معلومات حساسة في وحدة التحكم.
+  if (MOSTAQBALI_CONFIG.development.debug) {
+    console.info(
+      "[MOSTAQBALI] تم تحميل إعدادات المنصة."
+    );
+  }
+})(window);
