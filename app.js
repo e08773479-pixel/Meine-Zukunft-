@@ -1,1339 +1,1612 @@
+/* =========================================================
+   MOSTAQBALI | المستقبلي
+   File: app.js
+   Main Frontend Controller
+   ========================================================= */
+
 "use strict";
 
-(() => {
-const CONFIG = window.MOSTAQBALI_CONFIG;
-
-if (!CONFIG) {
-document.body.innerHTML =
-"<div style='padding:30px;font-family:Arial;text-align:center'>خطأ: ملف config.js غير موجود.</div>";
-return;
-}
-
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-
-const state = {
-user: null,
-page: "overview",
-authMode: "login",
-sidebarOpen: false,
-modalOpen: false,
-searchQuery: "",
-courses: [],
-teachers: [],
-exams: [],
-groups: [],
-notifications: [],
-supportTickets: [],
-progress: 0,
-settings: {
-notifications: true,
-studyReminders: true
-}
-};
-
-const PAGE_TITLES = {
-overview: "الرئيسية",
-subjects: "المواد الدراسية",
-courses: "الكورسات والدروس",
-exams: "الامتحانات",
-teachers: "المدرسون",
-groups: "المجموعات التعليمية",
-progress: "مستواي الدراسي",
-students: "إدارة الطلاب",
-parents: "متابعة الأبناء",
-subscriptions: "الاشتراكات",
-notifications: "الإشعارات",
-support: "خدمة العملاء",
-profile: "الملف الشخصي",
-settings: "الإعدادات",
-admin: "إدارة المنصة"
-};
-
-const ROLE_PAGES = {
-student: [
-"overview", "subjects", "courses", "exams", "teachers",
-"groups", "progress", "subscriptions", "notifications",
-"support", "profile", "settings"
-],
-teacher: [
-"overview", "courses", "exams", "groups", "students",
-"subscriptions", "notifications", "support", "profile", "settings"
-],
-parent: [
-"overview", "courses", "teachers", "progress", "parents",
-"subscriptions", "notifications", "support", "profile", "settings"
-],
-admin: [
-"overview", "subjects", "courses", "exams", "teachers",
-"groups", "progress", "students", "parents", "subscriptions",
-"notifications", "support", "profile", "settings", "admin"
-],
-support: [
-"overview", "notifications", "support", "profile", "settings"
-]
-};
-
-const ROLE_NOTICES = {
-student: "يمكنك استكشاف المواد ومتابعة الدروس والامتحانات. لن يظهر المحتوى المدفوع إلا بعد التحقق من الاشتراك الفعلي.",
-teacher: "حساب المدرس يحتاج إلى اعتماد الإدارة قبل نشر المحتوى. إدارة المحتوى الفعلية ستُربط بالخادم في مرحلة التنفيذ التالية.",
-parent: "تحتاج متابعة الطالب إلى ربط موثّق بين حساب ولي الأمر وحساب الطالب.",
-admin: "واجهة إدارة المنصة تحتاج إلى حساب مالك موثّق وصلاحيات خادمية قبل إجراء أي تغييرات فعلية.",
-support: "تظهر تذاكر الدعم الحقيقية بعد ربط نظام خدمة العملاء بالخادم."
-};
-
-function escapeHTML(value) {
-return String(value ?? "").replace(/[&<>"']/g, character => ({
-"&": "&",
-"<": "<",
-">": ">",
-'"': """,
-"'": "'"
-})[character]);
-}
-
-function readLocal(key, fallback) {
-try {
-const raw = localStorage.getItem(key);
-return raw ? JSON.parse(raw) : fallback;
-} catch {
-return fallback;
-}
-}
-
-function writeLocal(key, value) {
-try {
-localStorage.setItem(key, JSON.stringify(value));
-return true;
-} catch {
-showToast("تعذر حفظ البيانات على هذا الجهاز.", "error");
-return false;
-}
-}
-
-function showToast(message, type = "info") {
-const container = $("#toastContainer");
-if (!container) return;
-
-const toast = document.createElement("div");
-toast.className = `toast ${type}`;
-toast.textContent = message;
-container.appendChild(toast);
-
-window.setTimeout(() => {
-  toast.remove();
-}, 3600);
-
-}
-
-function showFormError(message) {
-const box = $("#authError");
-if (!box) return;
-box.textContent = message;
-box.classList.remove("hidden");
-}
-
-function clearFormError() {
-const box = $("#authError");
-if (!box) return;
-box.textContent = "";
-box.classList.add("hidden");
-}
-
-function getInitial(name) {
-const normalized = String(name || "").trim();
-return normalized ? normalized.charAt(0) : "م";
-}
-
-function getRoleLabel(role) {
-return CONFIG.ROLE_LABELS[role] || "مستخدم";
-}
-
-function getStageLabel(stage) {
-return CONFIG.STAGES.find(item => item.value === stage)?.label || "غير محددة";
-}
-
-function getGradeLabel(grade) {
-return CONFIG.GRADES.find(item => item.value === grade)?.label || "غير محدد";
-}
-
-function getTrackLabel(track) {
-return CONFIG.TRACKS.find(item => item.value === track)?.label || "غير محددة";
-}
-
-function currentUser() {
-return state.user;
-}
-
-function userCanOpenPage(page) {
-const user = currentUser();
-if (!user) return false;
-const allowedPages = ROLE_PAGES[user.role] || [];
-return allowedPages.includes(page);
-}
-
-function setAuthMode(mode) {
-state.authMode = mode === "register" ? "register" : "login";
-
-const register = state.authMode === "register";
-
-$$(".auth-tab").forEach(tab => {
-  tab.classList.toggle("active", tab.dataset.authMode === state.authMode);
-});
-
-$("#authTitle").textContent = register ? "أنشئ حسابك" : "سجّل دخولك";
-$("#authSubtitle").textContent = register
-  ? "ابدأ رحلتك التعليمية مع المستقبلي."
-  : "سجّل الدخول لمتابعة رحلتك التعليمية.";
-
-$("#registerNameGroup").classList.toggle("hidden", !register);
-$("#registerExtraFields").classList.toggle("hidden", !register);
-$("#forgotPasswordButton").classList.toggle("hidden", register);
-$("#authSubmit").textContent = register ? "إنشاء الحساب" : "تسجيل الدخول";
-
-$("#authName").required = register;
-$("#authName").disabled = !register;
-
-const role = $("#authRole").value;
-updateRoleFields(role);
-
-$("#authPassword").autocomplete = register ? "new-password" : "current-password";
-clearFormError();
-
-}
-
-function updateRoleFields(role) {
-const register = state.authMode === "register";
-const student = register && role === "student";
-const teacher = register && role === "teacher";
-
-$("#studentFields").classList.toggle("hidden", !student);
-$("#teacherFields").classList.toggle("hidden", !teacher);
-
-$("#authStage").required = student;
-$("#authGrade").required = student;
-$("#authTrack").required = false;
-$("#authSpecialty").required = teacher;
-$("#authPhone").required = false;
-
-}
-
-function showAuth() {
-$("#mainApp").classList.add("hidden");
-$("#authScreen").classList.remove("hidden");
-closeSidebar();
-setAuthMode(state.authMode);
-}
-
-function showApp() {
-$("#authScreen").classList.add("hidden");
-$("#mainApp").classList.remove("hidden");
-renderUserIdentity();
-renderDashboard();
-navigateTo("overview");
-}
-
-function renderUserIdentity() {
-const user = currentUser();
-if (!user) return;
-
-const name = escapeHTML(user.name || "مستخدم المستقبلي");
-const initial = escapeHTML(getInitial(user.name));
-const role = escapeHTML(getRoleLabel(user.role));
-
-$("#sidebarUserName").textContent = name;
-$("#sidebarUserRole").textContent = role;
-$("#sidebarAvatar").textContent = initial;
-
-$("#topbarUserName").textContent = name;
-$("#topbarUserRole").textContent = role;
-$("#topbarAvatar").textContent = initial;
-
-$("#welcomeName").textContent = user.name || "بطل المستقبل";
-$("#welcomeDescription").textContent = getWelcomeDescription(user.role);
-
-$$(".nav-item[data-roles]").forEach(item => {
-  const roles = item.dataset.roles.split(",");
-  item.classList.toggle("hidden", !roles.includes(user.role));
-});
-
-$$(".admin-only").forEach(item => {
-  item.classList.toggle("hidden", user.role !== "admin");
-});
-
-const notice = $("#roleNotice");
-notice.textContent = ROLE_NOTICES[user.role] || "";
-notice.classList.toggle("hidden", !notice.textContent);
-
-}
-
-function getWelcomeDescription(role) {
-const descriptions = {
-student: "نظّم وقتك، تابع دروسك، واجعل كل يوم خطوة جديدة نحو هدفك.",
-teacher: "جهّز محتواك التعليمي، ونظّم دروسك، وتابع طلابك بعد اعتماد حسابك.",
-parent: "تابع رحلة أبنائك التعليمية ونتائجهم بعد ربط حساباتهم بصورة موثّقة.",
-admin: "من هنا ستتمكن من إدارة المنصة ومراجعة الحسابات والمحتوى والاشتراكات.",
-support: "تابع طلبات المساعدة واعمل على تقديم تجربة أفضل لمستخدمي المنصة."
-};
-
-return descriptions[role] || descriptions.student;
-
-}
-
-function navigateTo(page) {
-if (!PAGE_TITLES[page]) {
-showToast("القسم المطلوب غير موجود.", "error");
-return;
-}
-
-if (!currentUser()) {
-  showAuth();
-  return;
-}
-
-if (!userCanOpenPage(page)) {
-  showToast("ليس لديك صلاحية للوصول إلى هذا القسم.", "error");
-  return;
-}
-
-state.page = page;
-closeSidebar();
-
-$("#breadcrumbCurrent").textContent = PAGE_TITLES[page];
-
-$$(".nav-item").forEach(item => {
-  item.classList.toggle("active", item.dataset.page === page);
-});
-
-if (page === "overview") {
-  renderDashboard();
-} else {
-  renderPage(page);
-}
-
-window.scrollTo({ top: 0, behavior: "smooth" });
-
-}
-
-function subjectCard(subject) {
-return "<button class="subject-card" data-action="open-subject" data-subject="${escapeHTML(subject.id)}" style="--subject-color:${escapeHTML(subject.color)}; --subject-tint:${escapeHTML(subject.tint)}"> <span class="subject-icon">${escapeHTML(subject.icon)}</span> <span class="subject-copy"> <strong>${escapeHTML(subject.name)}</strong> <span>استكشف المادة ←</span> </span> </button>";
-}
-
-function renderSubjects(target, subjects = CONFIG.SUBJECTS) {
-const container = $(target);
-if (!container) return;
-
-if (!subjects.length) {
-  container.innerHTML = emptyState("لا توجد مواد", "ستظهر المواد بعد إضافتها من إدارة المنصة.", "▦");
-  return;
-}
-
-container.innerHTML = subjects.map(subjectCard).join("");
-
-}
-
-function renderTeachers(target, teachers = state.teachers) {
-const container = $(target);
-if (!container) return;
-
-if (!teachers.length) {
-  container.innerHTML = emptyState(
-    "لا توجد بيانات مدرسين متاحة حاليًا",
-    "سيظهر هنا المدرسون المعتمدون عند ربط المنصة بمصدر بيانات حقيقي.",
-    "♙"
-  );
-  return;
-}
-
-container.innerHTML = teachers.map(teacher => `
-  <article class="teacher-card">
-    <div class="teacher-avatar">${escapeHTML(getInitial(teacher.name))}</div>
-    <h3>${escapeHTML(teacher.name)}</h3>
-    <span class="teacher-specialty">${escapeHTML(teacher.specialty || "التخصص غير محدد")}</span>
-    <button class="button button-secondary"
-      data-action="view-teacher"
-      data-id="${escapeHTML(teacher.id)}">عرض الملف</button>
-  </article>
-`).join("");
-
-}
-
-function renderDashboard() {
-if (!currentUser()) return;
-
-renderSubjects("#subjectsGrid");
-renderTeachers("#teachersGrid");
-
-$("#statCourses").textContent = String(state.courses.length);
-$("#statExams").textContent = String(state.exams.length);
-$("#statGroups").textContent = String(state.groups.length);
-$("#statProgress").textContent = `${state.progress}%`;
-$("#progressLine").style.width = `${Math.min(100, Math.max(0, state.progress))}%`;
-
-renderUpcoming();
-
-}
-
-function renderUpcoming() {
-const container = $("#upcomingList");
-if (!container) return;
-
-const items = [
-  {
-    icon: "▤",
-    title: "الكورسات والدروس",
-    description: "تصفح المحتوى التعليمي المتاح",
-    page: "courses"
-  },
-  {
-    icon: "✓",
-    title: "الامتحانات",
-    description: "راجع الامتحانات المنشورة",
-    page: "exams"
-  },
-  {
-    icon: "◇",
-    title: "الاشتراكات",
-    description: "اطلع على حالة اشتراكاتك",
-    page: "subscriptions"
-  }
-];
-
-container.innerHTML = items.map(item => `
-  <div class="upcoming-item">
-    <span class="upcoming-item-icon">${item.icon}</span>
-    <span class="upcoming-item-copy">
-      <strong>${escapeHTML(item.title)}</strong>
-      <span>${escapeHTML(item.description)}</span>
-    </span>
-    <button data-action="navigate" data-page="${item.page}">فتح</button>
-  </div>
-`).join("");
-
-}
-
-function emptyState(title, description, icon = "▤") {
-return "<div class="empty-state"> <div class="empty-state-icon">${escapeHTML(icon)}</div> <h3>${escapeHTML(title)}</h3> <p>${escapeHTML(description)}</p> </div>";
-}
-
-function pageHeading(title, description, action = "") {
-return "<div class="page-heading"> <div> <span class="section-kicker">المستقبلي</span> <h1>${escapeHTML(title)}</h1> <p>${escapeHTML(description)}</p> </div> ${action} </div>";
-}
-
-function renderPage(page) {
-const container = $("#pageContainer");
-if (!container) return;
-
-const renderers = {
-  subjects: renderSubjectsPage,
-  courses: renderCoursesPage,
-  exams: renderExamsPage,
-  teachers: renderTeachersPage,
-  groups: renderGroupsPage,
-  progress: renderProgressPage,
-  students: renderStudentsPage,
-  parents: renderParentsPage,
-  subscriptions: renderSubscriptionsPage,
-  notifications: renderNotificationsPage,
-  support: renderSupportPage,
-  profile: renderProfilePage,
-  settings: renderSettingsPage,
-  admin: renderAdminPage
-};
-
-const renderer = renderers[page];
-if (!renderer) {
-  container.innerHTML = pageHeading(PAGE_TITLES[page], "القسم غير متاح.");
-  return;
-}
-
-renderer(container);
-
-}
-
-function renderSubjectsPage(container) {
-container.innerHTML = "${pageHeading("المواد الدراسية", "تصفح المواد المتاحة في المنصة.")} <div class="page-toolbar"> <input id="subjectSearch" type="search" placeholder="ابحث عن مادة..."> </div> <div id="allSubjectsGrid" class="subjects-grid"></div>";
-
-renderSubjects("#allSubjectsGrid");
-
-$("#subjectSearch").addEventListener("input", event => {
-  const query = event.target.value.trim().toLowerCase();
-  const filtered = CONFIG.SUBJECTS.filter(subject =>
-    subject.name.toLowerCase().includes(query) ||
-    subject.description.toLowerCase().includes(query)
-  );
-  renderSubjects("#allSubjectsGrid", filtered);
-});
-
-}
-
-function renderCoursesPage(container) {
-container.innerHTML = "${pageHeading( state.user.role === "teacher" ? "إدارة الكورسات" : "الكورسات والدروس", state.user.role === "teacher" ? "سيتم ربط إنشاء الكورسات ونشرها بنظام اعتماد المدرسين." : "الكورسات المعروضة يجب أن تكون منشورة من مدرس معتمد." )} <div class="inline-notice"> لا توجد كورسات مستوردة من خادم حتى الآن. هذه الواجهة لا تنشئ اشتراكات أو محتوى مدفوعًا من تلقاء نفسها. </div> <div id="coursesGrid" class="card-grid"></div>";
-
-$("#coursesGrid").innerHTML = state.courses.length
-  ? state.courses.map(course => `
-    <article class="course-card">
-      <div class="course-cover"><span class="course-cover-icon">▤</span></div>
-      <div class="course-body">
-        <h3>${escapeHTML(course.title)}</h3>
-        <p>${escapeHTML(course.description || "لا يوجد وصف.")}</p>
-        <div class="course-meta">
-          <span>${escapeHTML(course.subject || "غير محدد")}</span>
-          <span>${escapeHTML(course.grade || "غير محدد")}</span>
-        </div>
-      </div>
-    </article>
-  `).join("")
-  : emptyState(
-    "لا توجد كورسات متاحة بعد",
-    "عندما يُربط النظام بالخادم وينشر المدرسون المعتمدون كورساتهم، ستظهر هنا البيانات الحقيقية.",
-    "▤"
-  );
-
-}
-
-function renderExamsPage(container) {
-container.innerHTML = "${pageHeading("الامتحانات", "تابع الامتحانات المنشورة والنتائج المسجلة لحسابك.")} <div class="inline-notice"> لا يمكن بدء امتحان أو تسجيل نتيجة حقيقية قبل بناء نظام الامتحانات وحفظ الإجابات على الخادم. </div> <div class="data-card"> ${emptyState("لا توجد امتحانات منشورة", "ستظهر الامتحانات بعد إضافتها ونشرها من خلال النظام الفعلي.", "✓")} </div>";
-}
-
-function renderTeachersPage(container) {
-container.innerHTML = "${pageHeading("المدرسون", "تعرف على المدرسين المعتمدين وتخصصاتهم.")} <div class="inline-notice"> يعرض هذا القسم بيانات المدرسين التي ستصل من قاعدة البيانات، ولا يحتوي على مدرسين تجريبيين معروضين على أنهم حقيقيون. </div> <div id="allTeachersGrid" class="teachers-grid"></div>";
-
-renderTeachers("#allTeachersGrid");
-
-}
-
-function renderGroupsPage(container) {
-container.innerHTML = "${pageHeading("المجموعات التعليمية", "مساحات منظمة للتواصل المرتبط بالمواد والصفوف الدراسية.")} <div class="inline-notice"> الرسائل والمجموعات الفعلية تحتاج إلى قاعدة بيانات ونظام صلاحيات وإشراف وحماية من إساءة الاستخدام. </div> <div class="data-card"> ${emptyState("لا توجد مجموعات متاحة", "ستظهر المجموعات المنشأة والمعتمدة بعد ربط النظام بالخادم.", "▧")} </div>";
-}
-
-function renderProgressPage(container) {
-const user = currentUser();
-
-container.innerHTML = `
-  ${pageHeading("مستواي الدراسي", "تابع تقدمك اعتمادًا على الدروس والنتائج المسجلة فعليًا.")}
-  <div class="panel">
-    <div class="panel-heading">
-      <div>
-        <h2>الملف الدراسي</h2>
-        <p>البيانات المرتبطة بحسابك</p>
-      </div>
-    </div>
-    <div class="profile-info">
-      <div class="profile-info-item">
-        <span>المرحلة الدراسية</span>
-        <strong>${escapeHTML(getStageLabel(user.stage))}</strong>
-      </div>
-      <div class="profile-info-item">
-        <span>الصف الدراسي</span>
-        <strong>${escapeHTML(getGradeLabel(user.grade))}</strong>
-      </div>
-      <div class="profile-info-item">
-        <span>الشعبة</span>
-        <strong>${escapeHTML(getTrackLabel(user.track))}</strong>
-      </div>
-      <div class="profile-info-item">
-        <span>التقدم المسجل</span>
-        <strong>${state.progress}%</strong>
-      </div>
-    </div>
-  </div>
-  <div class="panel" style="margin-top:18px">
-    ${emptyState("لا توجد نتائج مسجلة", "سيظهر تقدمك الحقيقي بعد تنفيذ نظام الدروس والامتحانات وحفظ النتائج.", "↗")}
-  </div>
-`;
-
-}
-
-function renderStudentsPage(container) {
-container.innerHTML = "${pageHeading("إدارة الطلاب", "عرض الطلاب المسجلين المرتبطين بحساب المدرس أو الإدارة.")} <div class="inline-notice"> لا تُعرض بيانات الطلاب قبل وصولها من قاعدة البيانات والتحقق من صلاحية المستخدم للوصول إليها. </div> <div class="data-card"> ${emptyState("لا توجد بيانات طلاب", "سيتم عرض الطلاب المسموح لك بالوصول إلى بياناتهم بعد ربط الخادم.", "♧")} </div>";
-}
-
-function renderParentsPage(container) {
-container.innerHTML = "${pageHeading("متابعة الأبناء", "تابع تقدم الطالب بعد ربط الحسابين بطريقة موثقة.")} <div class="panel"> <h2>ربط حساب الطالب</h2> <p class="modal-description"> ستحتاج النسخة النهائية إلى آلية ربط آمنة بموافقة الطالب أو ولي الأمر حسب السياسة المعتمدة، مع التحقق من هوية الحسابين من الخادم. </p> <div class="form-group"> <label for="parentLinkCode">رمز الربط</label> <input id="parentLinkCode" type="text" placeholder="أدخل الرمز الصادر من النظام"> </div> <button class="button button-primary" data-action="request-parent-link"> طلب الربط </button> </div>";
-}
-
-function renderSubscriptionsPage(container) {
-container.innerHTML = "${pageHeading("الاشتراكات", "إدارة الاشتراك التعليمي واشتراك المدرس في المنصة.")} <div class="card-grid"> <article class="panel"> <span class="section-kicker">اشتراك الطالب</span> <h2>الكورسات التعليمية</h2> <p class="modal-description"> شراء الكورس أو الاشتراك مع مدرس يتطلب سعرًا معتمدًا وطلب دفع وتحققًا فعليًا من الخادم. </p> <span class="status-pill neutral">لا توجد بيانات دفع مرتبطة</span> </article> <article class="panel"> <span class="section-kicker">اشتراك المدرس</span> <h2>الاشتراك في المنصة</h2> <p class="modal-description"> تحدد الإدارة سعر الاشتراك ومدته ومزاياه. لا يُعتمد الاشتراك اعتمادًا على رسالة من المتصفح. </p> <span class="status-pill neutral">بانتظار ربط نظام الاشتراكات</span> </article> </div> <div class="inline-notice" style="margin-top:18px"> لا توجد هنا عملية دفع وهمية. تفعيل أي اشتراك مدفوع يجب أن يحدث بعد تأكيد الدفع من مزود الدفع على الخادم. </div>";
-}
-
-function renderNotificationsPage(container) {
-container.innerHTML = "${pageHeading("الإشعارات", "تنبيهات الحساب والدروس والامتحانات والدعم.")} <div class="data-card"> ${emptyState( "لا توجد إشعارات", "ستظهر الإشعارات الحقيقية بعد ربط خدمة الإشعارات بالخادم.", "♧" )} </div>";
-}
-
-function renderSupportPage(container) {
-const tickets = state.supportTickets.filter(ticket => ticket.owner === state.user.id);
-
-container.innerHTML = `
-  ${pageHeading("خدمة العملاء", "أرسل طلب مساعدة وتابع الردود من فريق الدعم.")}
-  <div class="panel">
-    <h2>إنشاء طلب دعم</h2>
-    <p class="modal-description">
-      النموذج التالي يحفظ مسودة محلية على هذا الجهاز فقط. إرسال تذكرة رسمية ومتابعتها بين الأجهزة يحتاج إلى الخادم.
-    </p>
-    <form id="supportForm">
-      <div class="form-layout">
-        <div class="form-group">
-          <label for="supportSubject">موضوع الطلب</label>
-          <select id="supportSubject" required>
-            <option value="">اختر الموضوع</option>
-            <option value="account">الحساب وتسجيل الدخول</option>
-            <option value="course">الكورسات والدروس</option>
-            <option value="payment">الاشتراكات والمدفوعات</option>
-            <option value="technical">مشكلة تقنية</option>
-            <option value="other">موضوع آخر</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="supportPriority">الأولوية</label>
-          <select id="supportPriority">
-            <option value="normal">عادية</option>
-            <option value="high">مرتفعة</option>
-          </select>
-        </div>
-        <div class="form-group full-width">
-          <label for="supportMessage">تفاصيل المشكلة</label>
-          <textarea id="supportMessage" placeholder="اشرح المشكلة بالتفصيل..." required minlength="10"></textarea>
-        </div>
-      </div>
-      <button class="button button-primary" type="submit">حفظ مسودة الطلب</button>
-    </form>
-  </div>
-  <div class="content-section">
-    <div class="section-heading">
-      <div><h2>طلباتي</h2><p>المسودات المحفوظة محليًا على هذا الجهاز.</p></div>
-    </div>
-    <div id="supportTicketsList"></div>
-  </div>
-`;
-
-const list = $("#supportTicketsList");
-
-list.innerHTML = tickets.length
-  ? tickets.map(ticket => `
-    <article class="panel" style="margin-bottom:12px">
-      <strong>${escapeHTML(ticket.subjectLabel)}</strong>
-      <p>${escapeHTML(ticket.message)}</p>
-      <span class="status-pill pending">مسودة محلية</span>
-    </article>
-  `).join("")
-  : emptyState("لا توجد طلبات محفوظة", "يمكنك إنشاء مسودة طلب دعم من النموذج أعلاه.", "?");
-
-$("#supportForm").addEventListener("submit", event => {
-  event.preventDefault();
-
-  const subject = $("#supportSubject").value;
-  const message = $("#supportMessage").value.trim();
-  const priority = $("#supportPriority").value;
-
-  if (!subject || message.length < 10) {
-    showToast("اختر موضوع الطلب واكتب تفاصيل لا تقل عن 10 أحرف.", "error");
-    return;
-  }
-
-  const subjectLabels = {
-    account: "الحساب وتسجيل الدخول",
-    course: "الكورسات والدروس",
-    payment: "الاشتراكات والمدفوعات",
-    technical: "مشكلة تقنية",
-    other: "موضوع آخر"
+/* ===================== APP CONFIGURATION ===================== */
+
+const MostaqbaliApp = (() => {
+  const CONFIG = {
+    appName: "المستقبلي",
+    englishName: "MOSTAQBALI",
+    splashDuration: 5000,
+    animationDuration: 250,
+    toastDuration: 3500,
+    storagePrefix: "mostaqbali_"
   };
 
-  state.supportTickets.push({
-    id: createId(),
-    owner: state.user.id,
-    subject,
-    subjectLabel: subjectLabels[subject],
-    message,
-    priority,
-    status: "draft",
-    createdAt: new Date().toISOString()
-  });
-
-  writeLocal(CONFIG.STORAGE_KEYS.SUPPORT, state.supportTickets);
-  showToast("تم حفظ مسودة الطلب على هذا الجهاز.", "success");
-  renderSupportPage($("#pageContainer"));
-});
-
-}
-
-function renderProfilePage(container) {
-const user = currentUser();
-const profileImage = user.avatar
-? "<img src="${escapeHTML(user.avatar)}" alt="الصورة الشخصية">"
-: escapeHTML(getInitial(user.name));
-
-container.innerHTML = `
-  ${pageHeading("الملف الشخصي", "راجع البيانات الأساسية المرتبطة بالملف المحلي لهذا الجهاز.")}
-  <div class="profile-layout">
-    <section class="profile-summary">
-      <div class="profile-avatar">${profileImage}</div>
-      <h2>${escapeHTML(user.name)}</h2>
-      <p>${escapeHTML(getRoleLabel(user.role))}</p>
-      <span class="status-pill neutral">حساب الواجهة المحلية</span>
-      <div style="margin-top:18px">
-        <label class="button button-secondary" for="avatarUpload">تغيير الصورة</label>
-        <input id="avatarUpload" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
-      </div>
-      <p style="font-size:9px;line-height:1.9">
-        تُحفظ الصورة محليًا عند نجاح الحفظ. التخزين الدائم والآمن للصور يتطلب الخادم.
-      </p>
-    </section>
-
-    <section class="panel">
-      <h2>بيانات الحساب</h2>
-      <form id="profileForm" style="margin-top:20px">
-        <div class="form-layout">
-          <div class="form-group full-width">
-            <label for="profileName">الاسم بالكامل</label>
-            <input id="profileName" value="${escapeHTML(user.name)}" required minlength="2">
-          </div>
-          <div class="form-group full-width">
-            <label for="profileEmail">البريد الإلكتروني</label>
-            <input id="profileEmail" value="${escapeHTML(user.email)}" type="email" readonly>
-          </div>
-          ${user.role === "student" ? `
-            <div class="form-group">
-              <label for="profileStage">المرحلة</label>
-              <input id="profileStage" value="${escapeHTML(getStageLabel(user.stage))}" readonly>
-            </div>
-            <div class="form-group">
-              <label for="profileGrade">الصف</label>
-              <input id="profileGrade" value="${escapeHTML(getGradeLabel(user.grade))}" readonly>
-            </div>
-            <div class="form-group full-width">
-              <label for="profileTrack">الشعبة</label>
-              <input id="profileTrack" value="${escapeHTML(getTrackLabel(user.track))}" readonly>
-            </div>
-          ` : ""}
-          ${user.role === "teacher" ? `
-            <div class="form-group full-width">
-              <label for="profileSpecialty">التخصص</label>
-              <input id="profileSpecialty" value="${escapeHTML(user.specialty || "")}" readonly>
-            </div>
-          ` : ""}
-        </div>
-        <button class="button button-primary" type="submit">حفظ الاسم محليًا</button>
-      </form>
-    </section>
-  </div>
-`;
-
-$("#profileForm").addEventListener("submit", event => {
-  event.preventDefault();
-  const name = $("#profileName").value.trim();
-
-  if (name.length < 2) {
-    showToast("اكتب اسمًا صحيحًا.", "error");
-    return;
-  }
-
-  state.user.name = name;
-  persistProfile();
-  renderUserIdentity();
-  renderProfilePage($("#pageContainer"));
-  showToast("تم تحديث الاسم على هذا الجهاز.", "success");
-});
-
-$("#avatarUpload").addEventListener("change", event => {
-  const file = event.target.files?.[0];
-  if (!file) return;
-
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-  if (!allowedTypes.includes(file.type)) {
-    showToast("اختر صورة بصيغة JPG أو PNG أو WebP.", "error");
-    return;
-  }
-
-  if (file.size > 2 * 1024 * 1024) {
-    showToast("حجم الصورة يجب ألا يتجاوز 2 ميجابايت.", "error");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    if (typeof reader.result !== "string") {
-      showToast("تعذر قراءة الصورة.", "error");
-      return;
-    }
-
-    state.user.avatar = reader.result;
-
-    if (persistProfile()) {
-      renderUserIdentity();
-      renderProfilePage($("#pageContainer"));
-      showToast("تم تحديث الصورة على هذا الجهاز.", "success");
-    }
+  const state = {
+    initialized: false,
+    currentPage: "home",
+    previousPage: "home",
+    currentUser: null,
+    menuOpen: false,
+    modalOpen: false,
+    splashFinished: false,
+    toastTimers: new Map(),
+    eventListeners: [],
+    searchTimer: null
   };
 
-  reader.onerror = () => showToast("تعذر قراءة الصورة.", "error");
-  reader.readAsDataURL(file);
-});
+  const SELECTORS = {
+    splash: "#splashScreen, .splash-screen",
+    main: "#app, #mainApp, .app-main",
+    sidebar: "#sidebar, .sidebar",
+    sidebarBackdrop: "#sidebarBackdrop, .sidebar-backdrop",
+    menuToggle: "#menuToggle, #sidebarToggle, .header-menu-toggle",
+    modal: "#modalContainer, #modalRoot",
+    toastContainer: "#toastContainer, .toast-container",
+    globalSearch: "#globalSearch, [data-global-search]"
+  };
 
-}
+  /* ===================== HELPERS ===================== */
 
-function renderSettingsPage(container) {
-container.innerHTML = "${pageHeading("الإعدادات", "إدارة تفضيلات الواجهة على هذا الجهاز.")} <div class="settings-list"> <div class="settings-row"> <div> <strong>الإشعارات</strong> <p>تفضيل عرض التنبيهات داخل الواجهة.</p> </div> <button class="simple-toggle ${state.settings.notifications ? "active" : ""}" data-action="toggle-setting" data-setting="notifications" aria-label="تغيير إعداد الإشعارات"></button> </div> <div class="settings-row"> <div> <strong>تذكيرات المذاكرة</strong> <p>تفضيل التذكيرات التعليمية داخل الواجهة.</p> </div> <button class="simple-toggle ${state.settings.studyReminders ? "active" : ""}" data-action="toggle-setting" data-setting="studyReminders" aria-label="تغيير تذكيرات المذاكرة"></button> </div> <div class="settings-row"> <div> <strong>البيانات المحلية</strong> <p>يمكنك مسح بيانات العرض المحفوظة على هذا الجهاز.</p> </div> <button class="button button-danger" data-action="clear-local-data">مسح البيانات المحلية</button> </div> </div> <div class="inline-notice" style="margin-top:18px"> هذه التفضيلات محلية. لا تمثل إعدادات إشعارات خادمية ولا تؤثر في الأجهزة الأخرى. </div>";
-}
+  function $(selector, root = document) {
+    return root.querySelector(selector);
+  }
 
-function renderAdminPage(container) {
-container.innerHTML = "${pageHeading("إدارة المنصة", "لوحة مخصصة لمالك المنصة بعد التحقق من صلاحياته على الخادم.")} <div class="inline-notice"> لا تعتبر هذه الواجهة حساب مالك حقيقيًا، ولا تمنح صلاحيات إدارية فعلية. في النسخة النهائية ستُحمى جميع العمليات الإدارية على الخادم. </div> <div class="card-grid"> ${adminCard("إدارة المستخدمين", "مراجعة الحسابات والأدوار وحالات التفعيل.", "♙")} ${adminCard("اعتماد المدرسين", "مراجعة طلبات الانضمام والتحقق من بيانات المدرسين.", "✓")} ${adminCard("المراحل والمواد", "إدارة الصفوف الدراسية والمواد والتصنيفات.", "▦")} ${adminCard("الكورسات والمحتوى", "مراجعة المحتوى المنشور وإخفاؤه عند الحاجة.", "▤")} ${adminCard("الاشتراكات", "إدارة الخطط والأسعار ومدد الاشتراك.", "◇")} ${adminCard("المدفوعات", "عرض العمليات المؤكدة من مزود الدفع.", "↗")} ${adminCard("المجموعات", "إدارة مجموعات المواد والصلاحيات والإشراف.", "▧")} ${adminCard("خدمة العملاء", "متابعة تذاكر الدعم والردود والحالات.", "?")} ${adminCard("سجل العمليات", "تسجيل الإجراءات الإدارية المهمة ومراجعتها.", "≡")} </div>";
-}
+  function $$(selector, root = document) {
+    return Array.from(root.querySelectorAll(selector));
+  }
 
-function adminCard(title, description, icon) {
-return "<article class="panel"> <span class="panel-heading-icon">${escapeHTML(icon)}</span> <h2 style="margin-top:14px">${escapeHTML(title)}</h2> <p class="modal-description" style="margin-top:8px;margin-bottom:0">${escapeHTML(description)}</p> </article>";
-}
+  function on(element, eventName, handler, options) {
+    if (!element) return;
 
-function createId() {
-if (window.crypto?.randomUUID) {
-return window.crypto.randomUUID();
-}
+    element.addEventListener(eventName, handler, options);
 
-return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    state.eventListeners.push({
+      element,
+      eventName,
+      handler,
+      options
+    });
+  }
 
-}
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      };
 
-function persistProfile() {
-if (!state.user) return false;
+      return entities[character];
+    });
+  }
 
-/*
- * بيانات ملف محلي للاختبار فقط.
- * لا تخزن كلمات المرور في localStorage.
- */
-const safeProfile = {
-  id: state.user.id,
-  name: state.user.name,
-  email: state.user.email,
-  role: state.user.role,
-  stage: state.user.stage || "",
-  grade: state.user.grade || "",
-  track: state.user.track || "",
-  specialty: state.user.specialty || "",
-  phone: state.user.phone || "",
-  avatar: state.user.avatar || ""
-};
+  function safeText(element, value) {
+    if (element) {
+      element.textContent = String(value ?? "");
+    }
+  }
 
-return writeLocal(CONFIG.STORAGE_KEYS.PROFILE, safeProfile);
+  function getElement(selector) {
+    return $(selector);
+  }
 
-}
+  function getAll(selector) {
+    return $$(selector);
+  }
 
-function validateEmail(email) {
-return /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(email);
-}
+  function storageKey(key) {
+    return CONFIG.storagePrefix + key;
+  }
 
-function createLocalProfile(formData) {
-const role = formData.get("role") || "student";
+  function readStorage(key, fallback = null) {
+    try {
+      const value = localStorage.getItem(storageKey(key));
 
-return {
-  id: createId(),
-  name: String(formData.get("name") || "").trim(),
-  email: String(formData.get("email") || "").trim().toLowerCase(),
-  role,
-  stage: String(formData.get("stage") || ""),
-  grade: String(formData.get("grade") || ""),
-  track: String(formData.get("track") || ""),
-  specialty: String(formData.get("specialty") || "").trim(),
-  phone: String(formData.get("phone") || "").trim(),
-  avatar: "",
-  teacherStatus: role === "teacher" ? CONFIG.TEACHER_STATUS.PENDING : "",
-  createdAt: new Date().toISOString()
-};
+      if (value === null) {
+        return fallback;
+      }
 
-}
+      return JSON.parse(value);
+    } catch (error) {
+      console.warn("تعذر قراءة البيانات المحلية:", error);
+      return fallback;
+    }
+  }
 
-async function handleAuthSubmit(event) {
-event.preventDefault();
-clearFormError();
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(
+        storageKey(key),
+        JSON.stringify(value)
+      );
 
-const form = event.currentTarget;
-const formData = new FormData(form);
-const email = String(formData.get("email") || "").trim().toLowerCase();
-const password = String(formData.get("password") || "");
+      return true;
+    } catch (error) {
+      console.warn("تعذر حفظ البيانات المحلية:", error);
+      return false;
+    }
+  }
 
-if (!validateEmail(email)) {
-  showFormError("اكتب بريدًا إلكترونيًا صحيحًا.");
-  return;
-}
+  function removeStorage(key) {
+    try {
+      localStorage.removeItem(storageKey(key));
+      return true;
+    } catch (error) {
+      console.warn("تعذر حذف البيانات المحلية:", error);
+      return false;
+    }
+  }
 
-if (password.length < CONFIG.SECURITY.MIN_PASSWORD_LENGTH) {
-  showFormError("كلمة المرور يجب أن تتكون من 8 أحرف على الأقل.");
-  return;
-}
-
-/*
- * الوضع المحلي ليس تسجيل دخول حقيقيًا.
- * لا نتحقق من كلمة مرور مخزنة، ولا ننشئ جلسة موثوقة هنا.
- */
-if (CONFIG.DEMO_MODE) {
-  if (state.authMode === "login") {
-    showFormError(
-      "تسجيل الدخول الحقيقي غير مفعّل حتى الآن. انتقل إلى «حساب جديد» لاختبار واجهة المشروع، ثم سنربط المصادقة بالخادم."
+  function dispatch(name, detail = {}) {
+    document.dispatchEvent(
+      new CustomEvent(`mostaqbali:${name}`, {
+        detail
+      })
     );
-    return;
   }
 
-  const name = String(formData.get("name") || "").trim();
+  function setLoading(button, loading, label = "جارٍ التنفيذ...") {
+    if (!button) return;
 
-  if (name.length < 2) {
-    showFormError("اكتب اسمك بالكامل.");
-    return;
-  }
+    if (loading) {
+      if (!button.dataset.originalText) {
+        button.dataset.originalText = button.innerHTML;
+      }
 
-  const role = String(formData.get("role") || "student");
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
 
-  if (!CONFIG.ROLE_LABELS[role] || role === "admin" || role === "support") {
-    showFormError("نوع الحساب غير صالح.");
-    return;
-  }
-
-  if (role === "student") {
-    if (!formData.get("stage") || !formData.get("grade")) {
-      showFormError("اختر المرحلة والصف الدراسي.");
-      return;
-    }
-
-    const grade = CONFIG.GRADES.find(item => item.value === formData.get("grade"));
-
-    if (!grade || grade.stage !== formData.get("stage")) {
-      showFormError("الصف الدراسي لا يتطابق مع المرحلة المحددة.");
-      return;
-    }
-  }
-
-  if (role === "teacher" && !String(formData.get("specialty") || "").trim()) {
-    showFormError("اكتب تخصصك الدراسي.");
-    return;
-  }
-
-  const localProfile = createLocalProfile(formData);
-  state.user = localProfile;
-
-  if (!persistProfile()) {
-    state.user = null;
-    showFormError("تعذر حفظ بيانات الحساب التجريبي على هذا الجهاز.");
-    return;
-  }
-
-  if (role === "teacher") {
-    showToast("تم فتح واجهة المدرس التجريبية. الاعتماد الحقيقي لم يُنفذ بعد.", "info");
-  } else {
-    showToast("تم فتح واجهة الاختبار المحلية. الحساب غير موثق على الخادم.", "success");
-  }
-
-  showApp();
-  return;
-}
-
-/*
- * مسار المصادقة الحقيقي سيُضاف بعد تجهيز الخادم.
- * لا ترسل كلمة المرور إلى جهة غير موثوقة.
- */
-if (!CONFIG.API_BASE_URL) {
-  showFormError("عنوان الخادم غير مضبوط. لا يمكن تنفيذ تسجيل دخول حقيقي.");
-  return;
-}
-
-showFormError("لم تتم إضافة نقطة اتصال المصادقة إلى الخادم بعد.");
-
-}
-
-function openModal(content) {
-$("#modalContent").innerHTML = content;
-$("#modalRoot").classList.remove("hidden");
-state.modalOpen = true;
-}
-
-function closeModal() {
-$("#modalRoot").classList.add("hidden");
-$("#modalContent").innerHTML = "";
-state.modalOpen = false;
-}
-
-function showLegalModal(type) {
-const isTerms = type === "terms";
-
-openModal(`
-  <h2 id="modalTitle" class="modal-title">${isTerms ? "شروط الاستخدام" : "سياسة الخصوصية"}</h2>
-  <p class="modal-description">
-    ${isTerms
-      ? "يجب استخدام المنصة وفق القوانين والسياسات التعليمية المعتمدة. يمنع إساءة استخدام الحسابات أو محاولة الوصول غير المصرح به إلى بيانات الآخرين."
-      : "يجب أن يوضح الإصدار النهائي كيفية جمع البيانات التعليمية ومعالجتها والاحتفاظ بها، وكيفية حماية الحسابات والصور والنتائج وبيانات القاصرين."}
-  </p>
-  <div class="inline-notice">
-    هذه صياغة أولية داخل واجهة التطوير، وليست بديلًا عن سياسة قانونية نهائية ومراجعة مناسبة قبل نشر المنصة.
-  </div>
-  <div class="modal-actions">
-    <button class="button button-primary" data-action="close-modal">إغلاق</button>
-  </div>
-`);
-
-}
-
-function toggleSidebar() {
-state.sidebarOpen = !state.sidebarOpen;
-$("#sidebar").classList.toggle("open", state.sidebarOpen);
-$("#sidebarOverlay").classList.toggle("active", state.sidebarOpen);
-document.body.style.overflow = state.sidebarOpen ? "hidden" : "";
-}
-
-function closeSidebar() {
-state.sidebarOpen = false;
-$("#sidebar").classList.remove("open");
-$("#sidebarOverlay").classList.remove("active");
-document.body.style.overflow = "";
-}
-
-function togglePassword() {
-const input = $("#authPassword");
-const button = $('[data-action="toggle-password"]');
-
-if (!input || !button) return;
-
-const isPassword = input.type === "password";
-input.type = isPassword ? "text" : "password";
-button.textContent = isPassword ? "إخفاء" : "عرض";
-
-}
-
-function handleForgotPassword() {
-showToast(
-"استعادة كلمة المرور تحتاج إلى خادم بريد إلكتروني ورابط آمن أحادي الاستخدام.",
-"info"
-);
-}
-
-function handleClearLocalData() {
-openModal("<h2 id="modalTitle" class="modal-title">مسح البيانات المحلية</h2> <p class="modal-description"> سيؤدي هذا إلى مسح الملف المحلي والتفضيلات ومسودات الدعم المحفوظة على هذا الجهاز. لن يؤدي ذلك إلى حذف أي بيانات من خادم خارجي. </p> <div class="modal-actions"> <button class="button button-danger" data-action="confirm-clear-local-data">مسح البيانات</button> <button class="button button-secondary" data-action="close-modal">إلغاء</button> </div>");
-}
-
-function confirmClearLocalData() {
-Object.values(CONFIG.STORAGE_KEYS).forEach(key => {
-try {
-localStorage.removeItem(key);
-} catch {
-// قد يمنع المتصفح التخزين المحلي.
-}
-});
-
-state.supportTickets = [];
-state.progress = 0;
-state.settings = {
-  notifications: true,
-  studyReminders: true
-};
-
-closeModal();
-showToast("تم مسح البيانات المحلية الخاصة بالمشروع.", "success");
-logout(false);
-
-}
-
-function logout(showMessage = true) {
-/*
-* في الوضع المحلي نزيل الملف التجريبي فقط.
-* الجلسات الحقيقية يجب إبطالها من الخادم.
-*/
-state.user = null;
-state.page = "overview";
-showAuth();
-setAuthMode("login");
-
-if (showMessage) {
-  showToast("تم الخروج من واجهة الاختبار المحلية.", "success");
-}
-
-}
-
-function restoreLocalState() {
-state.supportTickets = readLocal(CONFIG.STORAGE_KEYS.SUPPORT, []);
-state.notifications = readLocal(CONFIG.STORAGE_KEYS.NOTIFICATIONS, []);
-state.progress = Number(readLocal(CONFIG.STORAGE_KEYS.PROGRESS, 0)) || 0;
-state.settings = {
-...state.settings,
-...readLocal(CONFIG.STORAGE_KEYS.SETTINGS, {})
-};
-
-/*
- * لا نستعيد جلسة مصادقة من localStorage.
- * الملف المخزن هنا مجرد بيانات واجهة محلية وليس دليل هوية.
- */
-
-}
-
-function handleSearch(query) {
-state.searchQuery = query.trim();
-
-if (!state.searchQuery) return;
-
-const normalized = state.searchQuery.toLowerCase();
-
-const subjects = CONFIG.SUBJECTS.filter(subject =>
-  subject.name.toLowerCase().includes(normalized) ||
-  subject.description.toLowerCase().includes(normalized)
-);
-
-const teachers = state.teachers.filter(teacher =>
-  String(teacher.name || "").toLowerCase().includes(normalized) ||
-  String(teacher.specialty || "").toLowerCase().includes(normalized)
-);
-
-const results = [
-  ...subjects.map(subject => ({
-    title: subject.name,
-    description: subject.description,
-    action: "open-subject",
-    id: subject.id,
-    kind: "مادة دراسية"
-  })),
-  ...teachers.map(teacher => ({
-    title: teacher.name,
-    description: teacher.specialty || "مدرس",
-    action: "view-teacher",
-    id: teacher.id,
-    kind: "مدرس"
-  }))
-];
-
-openModal(`
-  <h2 id="modalTitle" class="modal-title">نتائج البحث</h2>
-  <p class="modal-description">نتائج مطابقة لعبارة: ${escapeHTML(state.searchQuery)}</p>
-  ${results.length ? `
-    <div class="settings-list">
-      ${results.map(result => `
-        <button class="settings-row"
-          data-action="${escapeHTML(result.action)}"
-          data-subject="${escapeHTML(result.id)}"
-          data-id="${escapeHTML(result.id)}">
-          <div>
-            <strong>${escapeHTML(result.title)}</strong>
-            <p>${escapeHTML(result.kind)} · ${escapeHTML(result.description)}</p>
-          </div>
-          <span>←</span>
-        </button>
-      `).join("")}
-    </div>
-  ` : emptyState(
-    "لا توجد نتائج مطابقة",
-    "جرّب اسم مادة مختلفًا أو تحقق من اتصال المنصة ببيانات المدرسين.",
-    "⌕"
-  )}
-`);
-
-}
-
-function openSubject(subjectId) {
-const subject = CONFIG.SUBJECTS.find(item => item.id === subjectId);
-
-if (!subject) {
-  showToast("المادة المطلوبة غير موجودة.", "error");
-  return;
-}
-
-closeModal();
-state.searchQuery = "";
-navigateTo("subjects");
-
-openModal(`
-  <h2 id="modalTitle" class="modal-title">${escapeHTML(subject.name)}</h2>
-  <p class="modal-description">${escapeHTML(subject.description)}</p>
-  <div class="inline-notice">
-    هذه بطاقة تعريف بالمادة. لم يتم ربط دروس أو كورسات حقيقية بهذه المادة بعد.
-  </div>
-  <div class="modal-actions">
-    <button class="button button-primary" data-action="close-modal">حسنًا</button>
-  </div>
-`);
-
-}
-
-function viewTeacher(teacherId) {
-const teacher = state.teachers.find(item => String(item.id) === String(teacherId));
-
-if (!teacher) {
-  showToast("لا توجد بيانات مدرس مطابقة في المصدر الحالي.", "error");
-  return;
-}
-
-openModal(`
-  <h2 id="modalTitle" class="modal-title">${escapeHTML(teacher.name)}</h2>
-  <p class="modal-description">${escapeHTML(teacher.specialty || "التخصص غير محدد")}</p>
-  <div class="inline-notice">
-    بيانات الملف والاشتراكات والمحتوى يجب تحميلها من الخادم بعد التحقق من صلاحية الوصول.
-  </div>
-  <div class="modal-actions">
-    <button class="button button-secondary" data-action="close-modal">إغلاق</button>
-  </div>
-`);
-
-}
-
-function toggleSetting(setting) {
-if (!(setting in state.settings)) return;
-
-state.settings[setting] = !state.settings[setting];
-writeLocal(CONFIG.STORAGE_KEYS.SETTINGS, state.settings);
-renderSettingsPage($("#pageContainer"));
-showToast("تم تحديث التفضيل المحلي.", "success");
-
-}
-
-function handleParentLinkRequest() {
-const input = $("#parentLinkCode");
-const value = input?.value.trim();
-
-if (!value) {
-  showToast("أدخل رمز الربط أولًا.", "error");
-  return;
-}
-
-showToast(
-  "لم يتم إرسال طلب ربط. التحقق الآمن من الرموز يحتاج إلى خادم فعلي.",
-  "info"
-);
-
-}
-
-function handleAction(actionElement) {
-const action = actionElement.dataset.action;
-if (!action) return;
-
-switch (action) {
-  case "go-home":
-    if (currentUser()) {
-      navigateTo("overview");
+      button.innerHTML = `
+        <span class="app-spinner" aria-hidden="true"></span>
+        <span>${escapeHTML(label)}</span>
+      `;
     } else {
-      showAuth();
+      button.disabled = false;
+      button.removeAttribute("aria-busy");
+
+      if (button.dataset.originalText) {
+        button.innerHTML = button.dataset.originalText;
+        delete button.dataset.originalText;
+      }
     }
-    break;
+  }
 
-  case "navigate":
-    navigateTo(actionElement.dataset.page);
-    break;
+  /* ===================== DYNAMIC STYLES ===================== */
 
-  case "toggle-sidebar":
-    toggleSidebar();
-    break;
+  function installRuntimeStyles() {
+    if ($("#mostaqbali-runtime-styles")) return;
 
-  case "close-sidebar":
-    closeSidebar();
-    break;
+    const style = document.createElement("style");
 
-  case "toggle-password":
-    togglePassword();
-    break;
+    style.id = "mostaqbali-runtime-styles";
 
-  case "forgot-password":
-    handleForgotPassword();
-    break;
+    style.textContent = `
+      .app-spinner {
+        display: inline-block;
+        width: 17px;
+        height: 17px;
+        border: 2px solid currentColor;
+        border-left-color: transparent;
+        border-radius: 50%;
+        animation: mostaqbaliSpin .7s linear infinite;
+      }
 
-  case "show-terms":
-    showLegalModal("terms");
-    break;
+      @keyframes mostaqbaliSpin {
+        to { transform: rotate(360deg); }
+      }
 
-  case "show-privacy":
-    showLegalModal("privacy");
-    break;
+      .app-view {
+        animation: mostaqbaliViewIn .22s ease both;
+      }
 
-  case "close-modal":
-    closeModal();
-    break;
+      @keyframes mostaqbaliViewIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
 
-  case "logout":
-    logout();
-    break;
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-  case "open-subject":
-    openSubject(actionElement.dataset.subject);
-    break;
+      body.app-modal-open {
+        overflow: hidden;
+      }
 
-  case "view-teacher":
-    viewTeacher(actionElement.dataset.id);
-    break;
+      body.app-menu-open {
+        overflow: hidden;
+      }
 
-  case "toggle-setting":
-    toggleSetting(actionElement.dataset.setting);
-    break;
+      .app-field-error {
+        display: block;
+        color: #e94d65;
+        font-size: 11px;
+        margin-top: 6px;
+      }
 
-  case "clear-local-data":
-    handleClearLocalData();
-    break;
+      .app-field-invalid {
+        border-color: #e94d65 !important;
+      }
 
-  case "confirm-clear-local-data":
-    confirmClearLocalData();
-    break;
+      .app-status-online {
+        width: 8px;
+        height: 8px;
+        display: inline-block;
+        border-radius: 50%;
+        background: #16a879;
+      }
 
-  case "request-parent-link":
-    handleParentLinkRequest();
-    break;
+      .app-hidden {
+        display: none !important;
+      }
 
-  default:
-    showToast("هذا الإجراء لم يُربط بعد.", "info");
-}
+      @media (prefers-reduced-motion: reduce) {
+        .app-view,
+        .app-spinner {
+          animation: none !important;
+        }
+      }
+    `;
 
-}
+    document.head.appendChild(style);
+  }
 
-function bindEvents() {
-$$(".auth-tab").forEach(tab => {
-tab.addEventListener("click", () => setAuthMode(tab.dataset.authMode));
-});
+  /* ===================== SPLASH SCREEN ===================== */
 
-$("#authRole").addEventListener("change", event => {
-  updateRoleFields(event.target.value);
-});
+  function finishSplash() {
+    if (state.splashFinished) return;
 
-$("#authForm").addEventListener("submit", handleAuthSubmit);
+    state.splashFinished = true;
 
-document.addEventListener("click", event => {
-  const actionElement = event.target.closest("[data-action]");
-  if (!actionElement) return;
-  handleAction(actionElement);
-});
+    const splash = $(SELECTORS.splash);
 
-$("#globalSearch").addEventListener("keydown", event => {
-  if (event.key === "Enter") {
-    event.preventDefault();
-
-    if (!currentUser()) {
-      showToast("سجّل الدخول إلى واجهة الاختبار أولًا.", "info");
+    if (!splash) {
+      dispatch("splash-finished");
       return;
     }
 
-    handleSearch(event.target.value);
-  }
-});
+    splash.style.transition = "opacity .35s ease";
+    splash.style.opacity = "0";
+    splash.style.pointerEvents = "none";
 
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-    if (state.modalOpen) closeModal();
+    window.setTimeout(() => {
+      splash.hidden = true;
+      splash.setAttribute("aria-hidden", "true");
+
+      dispatch("splash-finished");
+    }, 360);
+  }
+
+  function initializeSplash() {
+    const splash = $(SELECTORS.splash);
+
+    if (!splash) {
+      state.splashFinished = true;
+      return;
+    }
+
+    splash.hidden = false;
+    splash.removeAttribute("aria-hidden");
+    splash.style.opacity = "1";
+    splash.style.pointerEvents = "";
+
+    window.setTimeout(
+      finishSplash,
+      CONFIG.splashDuration
+    );
+  }
+
+  /* ===================== TOAST NOTIFICATIONS ===================== */
+
+  function ensureToastContainer() {
+    let container = $(SELECTORS.toastContainer);
+
+    if (container) return container;
+
+    container = document.createElement("div");
+    container.className = "toast-container";
+    container.id = "toastContainer";
+
+    container.setAttribute("aria-live", "polite");
+    container.setAttribute("aria-atomic", "false");
+
+    document.body.appendChild(container);
+
+    return container;
+  }
+
+  function toast(message, type = "info", options = {}) {
+    const container = ensureToastContainer();
+
+    const id =
+      "toast-" +
+      Date.now() +
+      "-" +
+      Math.random().toString(36).slice(2, 8);
+
+    const titles = {
+      success: "تم بنجاح",
+      error: "حدث خطأ",
+      warning: "تنبيه",
+      info: "معلومة"
+    };
+
+    const icons = {
+      success: "✓",
+      error: "!",
+      warning: "!",
+      info: "i"
+    };
+
+    const toastElement = document.createElement("div");
+
+    toastElement.className = `toast ${type}`;
+    toastElement.dataset.toastId = id;
+
+    const icon = document.createElement("div");
+    icon.className = "toast-icon";
+    icon.textContent = icons[type] || icons.info;
+
+    const content = document.createElement("div");
+    content.style.flex = "1";
+
+    const title = document.createElement("div");
+    title.className = "toast-title";
+    title.textContent = options.title || titles[type] || titles.info;
+
+    const body = document.createElement("div");
+    body.className = "toast-message";
+    body.textContent = String(message ?? "");
+
+    content.append(title, body);
+    toastElement.append(icon, content);
+    container.appendChild(toastElement);
+
+    const duration = Number(options.duration) || CONFIG.toastDuration;
+
+    const timer = window.setTimeout(() => {
+      toastElement.style.opacity = "0";
+      toastElement.style.transform = "translateX(-10px)";
+
+      window.setTimeout(() => {
+        toastElement.remove();
+        state.toastTimers.delete(id);
+      }, 250);
+    }, duration);
+
+    state.toastTimers.set(id, timer);
+
+    return id;
+  }
+
+  function dismissToast(id) {
+    const timer = state.toastTimers.get(id);
+
+    if (timer) {
+      clearTimeout(timer);
+      state.toastTimers.delete(id);
+    }
+
+    const element = $(`[data-toast-id="${id}"]`);
+
+    if (element) {
+      element.remove();
+    }
+  }
+
+  /* ===================== MODALS ===================== */
+
+  function ensureModalRoot() {
+    let root = $("#modalRoot");
+
+    if (root) return root;
+
+    root = document.createElement("div");
+    root.id = "modalRoot";
+
+    document.body.appendChild(root);
+
+    return root;
+  }
+
+  function openModal(options = {}) {
+    const root = ensureModalRoot();
+
+    if (state.modalOpen) {
+      closeModal();
+    }
+
+    const {
+      title = "",
+      content = "",
+      size = "",
+      confirmText = "",
+      cancelText = "إغلاق",
+      onConfirm = null,
+      onClose = null
+    } = options;
+
+    const backdrop = document.createElement("div");
+
+    backdrop.className = "modal-backdrop";
+    backdrop.dataset.modalBackdrop = "true";
+
+    const modal = document.createElement("section");
+
+    modal.className = `modal ${size ? `modal-${size}` : ""}`;
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-label", title || "نافذة");
+
+    const header = document.createElement("header");
+    header.className = "modal-header";
+
+    const heading = document.createElement("h2");
+    heading.className = "modal-title";
+    heading.textContent = title;
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "btn-icon";
+    closeButton.setAttribute("aria-label", "إغلاق النافذة");
+    closeButton.innerHTML = "&times;";
+
+    header.append(heading, closeButton);
+
+    const body = document.createElement("div");
+    body.className = "modal-body";
+
+    if (content instanceof Node) {
+      body.appendChild(content);
+    } else {
+      body.innerHTML = String(content);
+    }
+
+    const footer = document.createElement("footer");
+    footer.className = "modal-footer";
+
+    if (confirmText) {
+      const confirmButton = document.createElement("button");
+
+      confirmButton.type = "button";
+      confirmButton.className = "btn btn-primary";
+      confirmButton.textContent = confirmText;
+
+      on(confirmButton, "click", async () => {
+        if (typeof onConfirm !== "function") {
+          closeModal();
+          return;
+        }
+
+        try {
+          const result = await onConfirm();
+
+          if (result !== false) {
+            closeModal();
+          }
+        } catch (error) {
+          console.error(error);
+
+          toast(
+            "حصل خطأ أثناء تنفيذ العملية.",
+            "error"
+          );
+        }
+      });
+
+      footer.appendChild(confirmButton);
+    }
+
+    if (cancelText) {
+      const cancelButton = document.createElement("button");
+
+      cancelButton.type = "button";
+      cancelButton.className = "btn btn-light";
+      cancelButton.textContent = cancelText;
+
+      on(cancelButton, "click", closeModal);
+
+      footer.appendChild(cancelButton);
+    }
+
+    modal.append(header, body);
+
+    if (footer.children.length) {
+      modal.appendChild(footer);
+    }
+
+    backdrop.appendChild(modal);
+    root.appendChild(backdrop);
+
+    state.modalOpen = true;
+    state.modalCloseCallback = onClose || null;
+
+    document.body.classList.add("app-modal-open");
+
+    on(closeButton, "click", closeModal);
+
+    on(backdrop, "click", event => {
+      if (event.target === backdrop) {
+        closeModal();
+      }
+    });
+
+    state.lastFocusedElement = document.activeElement;
+
+    closeButton.focus();
+
+    return {
+      element: backdrop,
+      close: closeModal
+    };
+  }
+
+  function closeModal() {
+    const root = $("#modalRoot");
+
+    if (root) {
+      root.replaceChildren();
+    }
+
+    state.modalOpen = false;
+
+    document.body.classList.remove("app-modal-open");
+
+    const callback = state.modalCloseCallback;
+
+    state.modalCloseCallback = null;
+
+    if (typeof callback === "function") {
+      callback();
+    }
+
+    if (
+      state.lastFocusedElement &&
+      typeof state.lastFocusedElement.focus === "function"
+    ) {
+      state.lastFocusedElement.focus();
+    }
+  }
+
+  function confirm(options = {}) {
+    const {
+      title = "تأكيد العملية",
+      message = "هل تريد المتابعة؟",
+      confirmText = "تأكيد",
+      cancelText = "إلغاء",
+      danger = false
+    } = options;
+
+    return new Promise(resolve => {
+      const content = document.createElement("p");
+
+      content.textContent = message;
+      content.style.color = "var(--text-secondary)";
+      content.style.fontSize = "13px";
+      content.style.lineHeight = "2";
+
+      const modal = openModal({
+        title,
+        content,
+        confirmText,
+        cancelText,
+        onConfirm: () => {
+          resolve(true);
+          return true;
+        },
+        onClose: () => {
+          resolve(false);
+        }
+      });
+
+      const confirmButton = $(
+        ".modal-footer .btn-primary, .modal-footer .btn-danger",
+        modal.element
+      );
+
+      if (danger && confirmButton) {
+        confirmButton.classList.remove("btn-primary");
+        confirmButton.classList.add("btn-danger");
+      }
+    });
+  }
+
+  /* ===================== SIDEBAR ===================== */
+
+  function getSidebar() {
+    return $(SELECTORS.sidebar);
+  }
+
+  function getSidebarBackdrop() {
+    return $(SELECTORS.sidebarBackdrop);
+  }
+
+  function openSidebar() {
+    const sidebar = getSidebar();
+
+    if (!sidebar) return;
+
+    sidebar.classList.add("open");
+
+    const backdrop = getSidebarBackdrop();
+
+    if (backdrop) {
+      backdrop.classList.add("open");
+    }
+
+    state.menuOpen = true;
+
+    document.body.classList.add("app-menu-open");
+
+    const toggle = $(SELECTORS.menuToggle);
+
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", "true");
+    }
+
+    dispatch("sidebar-open");
+  }
+
+  function closeSidebar() {
+    const sidebar = getSidebar();
+
+    if (sidebar) {
+      sidebar.classList.remove("open");
+    }
+
+    const backdrop = getSidebarBackdrop();
+
+    if (backdrop) {
+      backdrop.classList.remove("open");
+    }
+
+    state.menuOpen = false;
+
+    document.body.classList.remove("app-menu-open");
+
+    const toggle = $(SELECTORS.menuToggle);
+
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", "false");
+    }
+
+    dispatch("sidebar-close");
+  }
+
+  function toggleSidebar() {
+    if (state.menuOpen) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  }
+
+  function initializeSidebar() {
+    const toggle = $(SELECTORS.menuToggle);
+    const backdrop = getSidebarBackdrop();
+
+    on(toggle, "click", toggleSidebar);
+    on(backdrop, "click", closeSidebar);
+
+    $$(".sidebar-link, [data-sidebar-link]").forEach(link => {
+      on(link, "click", () => {
+        if (window.innerWidth <= 900) {
+          closeSidebar();
+        }
+      });
+    });
+  }
+
+  /* ===================== PAGE NAVIGATION ===================== */
+
+  function normalizePage(page) {
+    return String(page || "home")
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]/g, "");
+  }
+
+  function getPageElements() {
+    return $$("[data-page]");
+  }
+
+  function navigate(page, options = {}) {
+    const targetPage = normalizePage(page);
+
+    if (!targetPage) return false;
+
+    const pages = getPageElements();
+
+    const target = pages.find(element => {
+      return element.dataset.page === targetPage;
+    });
+
+    if (!target) {
+      const customNavigation = window.MostaqbaliPages;
+
+      if (
+        customNavigation &&
+        typeof customNavigation.navigate === "function"
+      ) {
+        customNavigation.navigate(targetPage);
+        return true;
+      }
+
+      toast(
+        "الشاشة المطلوبة غير موجودة في الواجهة الحالية.",
+        "warning"
+      );
+
+      return false;
+    }
+
+    state.previousPage = state.currentPage;
+    state.currentPage = targetPage;
+
+    pages.forEach(element => {
+      const active = element === target;
+
+      element.hidden = !active;
+      element.classList.toggle("app-view", active);
+
+      if (active) {
+        element.setAttribute("aria-current", "page");
+      } else {
+        element.removeAttribute("aria-current");
+      }
+    });
+
+    $$("[data-navigate]").forEach(link => {
+      const active = link.dataset.navigate === targetPage;
+
+      link.classList.toggle("active", active);
+
+      if (active) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+
+    $$("[data-sidebar-link]").forEach(link => {
+      link.classList.toggle(
+        "active",
+        link.dataset.sidebarLink === targetPage
+      );
+    });
+
+    if (options.updateHash !== false) {
+      try {
+        history.replaceState(
+          { page: targetPage },
+          "",
+          `#${targetPage}`
+        );
+      } catch (error) {
+        console.warn("تعذر تحديث عنوان الشاشة:", error);
+      }
+    }
+
+    if (options.scroll !== false) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
     closeSidebar();
+
+    dispatch("navigate", {
+      page: targetPage,
+      previousPage: state.previousPage
+    });
+
+    return true;
   }
-});
 
-window.addEventListener("resize", () => {
-  if (window.innerWidth > 760) closeSidebar();
-});
+  function initializeNavigation() {
+    on(document, "click", event => {
+      const link = event.target.closest(
+        "[data-navigate], [data-page-link]"
+      );
 
-}
+      if (!link) return;
 
-function init() {
-$("#currentYear").textContent = String(new Date().getFullYear());
+      const page =
+        link.dataset.navigate ||
+        link.dataset.pageLink;
 
-restoreLocalState();
-bindEvents();
+      if (!page) return;
 
-window.setTimeout(() => {
-  $("#appLoader").classList.add("is-done");
+      event.preventDefault();
 
-  /*
-   * لا نفتح جلسة اعتمادًا على ملف محلي.
-   * يبدأ المستخدم من شاشة الدخول أو إنشاء الحساب.
-   */
-  showAuth();
-}, 650);
+      navigate(page);
+    });
 
-}
+    const initialHash = window.location.hash.replace("#", "");
 
-init();
+    if (
+      initialHash &&
+      getPageElements().some(element => {
+        return element.dataset.page === initialHash;
+      })
+    ) {
+      navigate(initialHash, {
+        updateHash: false,
+        scroll: false
+      });
+      return;
+    }
+
+    const activePage = getPageElements().find(element => {
+      return !element.hidden &&
+        element.dataset.page;
+    });
+
+    if (activePage) {
+      navigate(activePage.dataset.page, {
+        updateHash: false,
+        scroll: false
+      });
+    }
+  }
+
+  /* ===================== SEARCH ===================== */
+
+  function initializeSearch() {
+    const searchInputs = $$(
+      `${SELECTORS.globalSearch}, [data-search-input]`
+    );
+
+    searchInputs.forEach(input => {
+      on(input, "input", () => {
+        clearTimeout(state.searchTimer);
+
+        state.searchTimer = window.setTimeout(() => {
+          const query = input.value.trim();
+
+          dispatch("search", {
+            query,
+            input
+          });
+
+          applyLocalSearch(query, input);
+        }, 180);
+      });
+    });
+  }
+
+  function applyLocalSearch(query, input) {
+    const targetSelector = input.dataset.searchTarget;
+
+    if (!targetSelector) return;
+
+    const container = $(targetSelector);
+
+    if (!container) return;
+
+    const items = $$("[data-search-item]", container);
+
+    items.forEach(item => {
+      const text = (
+        item.dataset.searchText ||
+        item.textContent ||
+        ""
+      ).toLocaleLowerCase("ar");
+
+      const normalizedQuery = query.toLocaleLowerCase("ar");
+
+      item.hidden = Boolean(
+        normalizedQuery &&
+        !text.includes(normalizedQuery)
+      );
+    });
+
+    const visibleCount = items.filter(item => !item.hidden).length;
+
+    dispatch("search-results", {
+      query,
+      visibleCount,
+      container
+    });
+  }
+
+  /* ===================== FILTERS ===================== */
+
+  function initializeFilters() {
+    on(document, "click", event => {
+      const chip = event.target.closest("[data-filter]");
+
+      if (!chip) return;
+
+      const group = chip.dataset.filterGroup || "default";
+      const value = chip.dataset.filter;
+
+      $$(`[data-filter-group="${group}"]`).forEach(item => {
+        item.classList.toggle("active", item === chip);
+      });
+
+      const targetSelector = chip.dataset.filterTarget;
+
+      if (!targetSelector) {
+        dispatch("filter", {
+          group,
+          value,
+          chip
+        });
+
+        return;
+      }
+
+      const container = $(targetSelector);
+
+      if (!container) return;
+
+      $$("[data-filter-value]", container).forEach(item => {
+        const itemValue = item.dataset.filterValue;
+
+        item.hidden = value !== "all" && itemValue !== value;
+      });
+
+      dispatch("filter", {
+        group,
+        value,
+        chip,
+        container
+      });
+    });
+  }
+
+  /* ===================== FORM VALIDATION ===================== */
+
+  function clearFieldError(input) {
+    if (!input) return;
+
+    input.classList.remove("app-field-invalid");
+    input.removeAttribute("aria-invalid");
+
+    const parent = input.closest(".form-group") || input.parentElement;
+
+    if (!parent) return;
+
+    const error = $(".app-field-error", parent);
+
+    if (error) {
+      error.remove();
+    }
+  }
+
+  function setFieldError(input, message) {
+    if (!input) return;
+
+    clearFieldError(input);
+
+    input.classList.add("app-field-invalid");
+    input.setAttribute("aria-invalid", "true");
+
+    const parent = input.closest(".form-group") || input.parentElement;
+
+    if (!parent) return;
+
+    const error = document.createElement("span");
+
+    error.className = "app-field-error";
+    error.textContent = message;
+
+    parent.appendChild(error);
+  }
+
+  function validateEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      String(value || "").trim()
+    );
+  }
+
+  function validatePhone(value) {
+    const normalized = String(value || "")
+      .replace(/[\s()-]/g, "");
+
+    return /^(?:\+?20|0)?1[0125]\d{8}$/.test(normalized);
+  }
+
+  function validatePassword(value) {
+    return String(value || "").length >= 8;
+  }
+
+  function validateForm(form) {
+    if (!form) return false;
+
+    let valid = true;
+    let firstInvalid = null;
+
+    const fields = $$(
+      "input, select, textarea",
+      form
+    ).filter(input => {
+      return !input.disabled &&
+        input.type !== "hidden" &&
+        input.type !== "submit" &&
+        input.type !== "button";
+    });
+
+    fields.forEach(input => {
+      clearFieldError(input);
+
+      const value = String(input.value || "").trim();
+
+      let error = "";
+
+      if (input.required && !value) {
+        error = "الحقل ده مطلوب.";
+      } else if (
+        value &&
+        input.type === "email" &&
+        !validateEmail(value)
+      ) {
+        error = "اكتب بريدًا إلكترونيًا صحيحًا.";
+      } else if (
+        value &&
+        input.dataset.validate === "phone" &&
+        !validatePhone(value)
+      ) {
+        error = "اكتب رقم هاتف مصري صحيحًا.";
+      } else if (
+        input.dataset.validate === "password" &&
+        !validatePassword(input.value)
+      ) {
+        error = "كلمة المرور لازم تكون 8 أحرف على الأقل.";
+      } else if (
+        input.dataset.match &&
+        input.value !== $(input.dataset.match, form)?.value
+      ) {
+        error = "القيمتان غير متطابقتين.";
+      }
+
+      if (error) {
+        valid = false;
+
+        setFieldError(input, error);
+
+        if (!firstInvalid) {
+          firstInvalid = input;
+        }
+      }
+    });
+
+    if (firstInvalid) {
+      firstInvalid.focus();
+    }
+
+    return valid;
+  }
+
+  function initializeForms() {
+    on(document, "input", event => {
+      const input = event.target;
+
+      if (
+        input.matches(
+          ".app-field-invalid, [aria-invalid='true']"
+        )
+      ) {
+        clearFieldError(input);
+      }
+    });
+
+    on(document, "submit", event => {
+      const form = event.target;
+
+      if (!(form instanceof HTMLFormElement)) return;
+
+      if (form.dataset.validate !== "true") return;
+
+      if (!validateForm(form)) {
+        event.preventDefault();
+
+        toast(
+          "راجع البيانات المطلوبة قبل المتابعة.",
+          "warning"
+        );
+
+        return;
+      }
+
+      dispatch("form-valid", {
+        form
+      });
+    });
+  }
+
+  /* ===================== PASSWORD VISIBILITY ===================== */
+
+  function initializePasswordToggles() {
+    on(document, "click", event => {
+      const button = event.target.closest(
+        "[data-toggle-password]"
+      );
+
+      if (!button) return;
+
+      const selector = button.dataset.togglePassword;
+
+      const input = selector
+        ? $(selector)
+        : button.parentElement?.querySelector("input");
+
+      if (!input) return;
+
+      const show = input.type === "password";
+
+      input.type = show ? "text" : "password";
+
+      button.setAttribute(
+        "aria-label",
+        show ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"
+      );
+
+      button.setAttribute(
+        "aria-pressed",
+        String(show)
+      );
+    });
+  }
+
+  /* ===================== FILE UPLOADS ===================== */
+
+  function initializeFileInputs() {
+    on(document, "change", event => {
+      const input = event.target;
+
+      if (!(input instanceof HTMLInputElement)) return;
+
+      if (input.type !== "file") return;
+
+      const files = Array.from(input.files || []);
+
+      if (!files.length) return;
+
+      const maxSizeMB = Number(input.dataset.maxSizeMb) || 10;
+      const maxBytes = maxSizeMB * 1024 * 1024;
+
+      const allowedTypes = input.dataset.allowedTypes
+        ? input.dataset.allowedTypes
+            .split(",")
+            .map(type => type.trim().toLowerCase())
+        : [];
+
+      const invalidFile = files.find(file => {
+        if (file.size > maxBytes) return true;
+
+        if (
+          allowedTypes.length &&
+          !allowedTypes.some(type => {
+            if (type.startsWith(".")) {
+              return file.name.toLowerCase().endsWith(type);
+            }
+
+            return file.type.toLowerCase().includes(type);
+          })
+        ) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (invalidFile) {
+        input.value = "";
+
+        toast(
+          `الملف "${invalidFile.name}" غير مناسب للحجم أو النوع المحدد.`,
+          "error"
+        );
+
+        return;
+      }
+
+      const targetSelector = input.dataset.filePreview;
+
+      if (targetSelector) {
+        const target = $(targetSelector);
+
+        if (target) {
+          target.replaceChildren();
+
+          files.forEach(file => {
+            const item = document.createElement("div");
+
+            item.className = "file-item";
+
+            const info = document.createElement("div");
+
+            info.className = "file-info";
+
+            const name = document.createElement("div");
+
+            name.className = "file-name";
+            name.textContent = file.name;
+
+            const meta = document.createElement("div");
+
+            meta.className = "file-meta";
+            meta.textContent = formatFileSize(file.size);
+
+            info.append(name, meta);
+            item.appendChild(info);
+
+            target.appendChild(item);
+          });
+        }
+      }
+
+      dispatch("files-selected", {
+        files,
+        input
+      });
+    });
+  }
+
+  function formatFileSize(bytes) {
+    if (!Number.isFinite(bytes) || bytes < 0) {
+      return "حجم غير معروف";
+    }
+
+    if (bytes < 1024) {
+      return `${bytes} بايت`;
+    }
+
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} كيلوبايت`;
+    }
+
+    return `${(bytes / (1024 * 1024)).toFixed(2)} ميجابايت`;
+  }
+
+  /* ===================== IMAGE PREVIEWS ===================== */
+
+  function initializeImagePreviews() {
+    on(document, "change", event => {
+      const input = event.target;
+
+      if (!(input instanceof HTMLInputElement)) return;
+
+      if (
+        input.type !== "file" ||
+        !input.dataset.imagePreview
+      ) {
+        return;
+      }
+
+      const target = $(input.dataset.imagePreview);
+
+      if (!target) return;
+
+      const file = input.files?.[0];
+
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        toast(
+          "اختار ملف صورة صالحًا.",
+          "warning"
+        );
+
+        input.value = "";
+        return;
+      }
+
+      const objectURL = URL.createObjectURL(file);
+
+      if (target instanceof HTMLImageElement) {
+        const previousURL = target.dataset.objectUrl;
+
+        if (previousURL) {
+          URL.revokeObjectURL(previousURL);
+        }
+
+        target.src = objectURL;
+        target.dataset.objectUrl = objectURL;
+        target.hidden = false;
+      } else {
+        target.replaceChildren();
+
+        const image = document.createElement("img");
+
+        image.src = objectURL;
+        image.alt = "معاينة الصورة";
+        image.style.maxWidth = "100%";
+        image.style.maxHeight = "280px";
+        image.style.objectFit = "contain";
+        image.dataset.objectUrl = objectURL;
+
+        target.appendChild(image);
+      }
+    });
+  }
+
+  /* ===================== GLOBAL CLICK ACTIONS ===================== */
+
+  function initializeActions() {
+    on(document, "click", async event => {
+      const button = event.target.closest("[data-action]");
+
+      if (!button) return;
+
+      const action = button.dataset.action;
+
+      switch (action) {
+        case "open-menu":
+          openSidebar();
+          break;
+
+        case "close-menu":
+          closeSidebar();
+          break;
+
+        case "open-modal": {
+          const title = button.dataset.modalTitle || "";
+
+          const message = button.dataset.modalMessage || "";
+
+          openModal({
+            title,
+            content: escapeHTML(message),
+            cancelText: "إغلاق"
+          });
+
+          break;
+        }
+
+        case "close-modal":
+          closeModal();
+          break;
+
+        case "go-back":
+          if (state.previousPage) {
+            navigate(state.previousPage);
+          } else {
+            history.back();
+          }
+          break;
+
+        case "scroll-top":
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+          break;
+
+        case "sign-out": {
+          const accepted = await confirm({
+            title: "تسجيل الخروج",
+            message: "هل أنت متأكد إنك عايز تسجل الخروج؟",
+            confirmText: "تسجيل الخروج",
+            cancelText: "إلغاء"
+          });
+
+          if (!accepted) return;
+
+          dispatch("sign-out-requested");
+          break;
+        }
+
+        case "show-notice":
+          toast(
+            button.dataset.message || "لا توجد تفاصيل إضافية.",
+            button.dataset.type || "info"
+          );
+          break;
+
+        default:
+          dispatch("action", {
+            action,
+            button
+          });
+      }
+    });
+  }
+
+  /* ===================== KEYBOARD ===================== */
+
+  function initializeKeyboard() {
+    on(document, "keydown", event => {
+      if (event.key === "Escape") {
+        if (state.modalOpen) {
+          closeModal();
+          return;
+        }
+
+        if (state.menuOpen) {
+          closeSidebar();
+        }
+      }
+
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "k"
+      ) {
+        const search = $(SELECTORS.globalSearch);
+
+        if (search) {
+          event.preventDefault();
+          search.focus();
+        }
+      }
+    });
+  }
+
+  /* ===================== NETWORK STATUS ===================== */
+
+  function initializeNetworkStatus() {
+    function updateStatus() {
+      const online = navigator.onLine;
+
+      $$("[data-network-status]").forEach(element => {
+        element.textContent = online
+          ? "متصل بالإنترنت"
+          : "لا يوجد اتصال بالإنترنت";
+
+        element.classList.toggle("text-success", online);
+        element.classList.toggle("text-danger", !online);
+      });
+
+      dispatch("network-status", {
+        online
+      });
+    }
+
+    on(window, "online", updateStatus);
+    on(window, "offline", updateStatus);
+
+    updateStatus();
+  }
+
+  /* ===================== CURRENT YEAR ===================== */
+
+  function initializeCurrentYear() {
+    $$("[data-current-year]").forEach(element => {
+      element.textContent = String(new Date().getFullYear());
+    });
+  }
+
+  /* ===================== EXTERNAL LINKS ===================== */
+
+  function initializeExternalLinks() {
+    $$('a[href^="http"]').forEach(link => {
+      try {
+        const url = new URL(link.href, window.location.href);
+
+        if (url.origin !== window.location.origin) {
+          link.rel = "noopener noreferrer";
+        }
+      } catch (error) {
+        console.warn("رابط غير صالح:", link.href);
+      }
+    });
+  }
+
+  /* ===================== EVENT CLEANUP ===================== */
+
+  function destroy() {
+    state.eventListeners.forEach(item => {
+      item.element.removeEventListener(
+        item.eventName,
+        item.handler,
+        item.options
+      );
+    });
+
+    state.eventListeners = [];
+
+    state.toastTimers.forEach(timer => {
+      clearTimeout(timer);
+    });
+
+    state.toastTimers.clear();
+
+    clearTimeout(state.searchTimer);
+
+    state.initialized = false;
+  }
+
+  /* ===================== INITIALIZATION ===================== */
+
+  function init() {
+    if (state.initialized) return;
+
+    state.initialized = true;
+
+    installRuntimeStyles();
+
+    initializeCurrentYear();
+    initializeSplash();
+    initializeSidebar();
+    initializeNavigation();
+    initializeSearch();
+    initializeFilters();
+    initializeForms();
+    initializePasswordToggles();
+    initializeFileInputs();
+    initializeImagePreviews();
+    initializeActions();
+    initializeKeyboard();
+    initializeNetworkStatus();
+    initializeExternalLinks();
+
+    dispatch("ready", {
+      appName: CONFIG.appName,
+      version: "1.0.0"
+    });
+
+    console.info(
+      "%cMOSTAQBALI | المستقبلي",
+      "color:#2864f0;font-size:16px;font-weight:bold"
+    );
+
+    console.info(
+      "تم تشغيل أدوات الواجهة الأمامية."
+    );
+  }
+
+  /* ===================== PUBLIC API ===================== */
+
+  return {
+    init,
+
+    destroy,
+
+    config: Object.freeze({ ...CONFIG }),
+
+    getState() {
+      return { ...state };
+    },
+
+    navigate,
+
+    openSidebar,
+    closeSidebar,
+    toggleSidebar,
+
+    openModal,
+    closeModal,
+    confirm,
+
+    toast,
+    dismissToast,
+
+    validateForm,
+    validateEmail,
+    validatePhone,
+    validatePassword,
+
+    setLoading,
+
+    readStorage,
+    writeStorage,
+    removeStorage,
+
+    escapeHTML,
+    formatFileSize,
+
+    dispatch,
+
+    getElement,
+    getAll
+  };
 })();
+
+/* ===================== GLOBAL ACCESS ===================== */
+
+window.MostaqbaliApp = MostaqbaliApp;
+
+/* ===================== START APPLICATION ===================== */
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    MostaqbaliApp.init,
+    { once: true }
+  );
+} else {
+  MostaqbaliApp.init();
+                }
